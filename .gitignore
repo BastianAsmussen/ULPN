@@ -1,5 +1,4 @@
-/.idea
+.idea
+.env
+target
 
-/target
-
-*.env
