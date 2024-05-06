@@ -9,7 +9,7 @@ use anyhow::Result;
 use tracing::debug;
 
 pub mod models;
-#[allow(clippy::all)]
+#[allow(clippy::wildcard_imports)]
 mod schema;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
