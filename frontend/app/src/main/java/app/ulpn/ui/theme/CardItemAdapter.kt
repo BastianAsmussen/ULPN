@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
-import androidx.annotation.LayoutRes
 import app.ulpn.R
-import app.ulpn.ui.theme.CardDetailsActivity
 
 class CardItemAdapter(private val activity: Activity, private val cardItemList: List<CardItem>) :
     ArrayAdapter<CardItem>(activity, 0, cardItemList) {
