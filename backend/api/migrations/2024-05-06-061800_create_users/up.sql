@@ -1,5 +1,4 @@
 CREATE TYPE access_level AS ENUM (
-    'anonymous',    -- Smallest access level (not logged in).
     'child', 
     'parent',
     'professional'
