@@ -22,7 +22,7 @@ diesel::table! {
     identities (id) {
         id -> Int4,
         #[max_length = 255]
-        name -> Varchar,
+        value -> Varchar,
     }
 }
 
