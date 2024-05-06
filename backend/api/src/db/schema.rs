@@ -39,6 +39,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    topics (id) {
+        id -> Int4,
+        #[max_length = 128]
+        title -> Varchar,
+        content -> Text,
+    }
+}
+
+diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::AccessLevel;
 
@@ -61,5 +70,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     forums,
     identities,
     messages,
+    topics,
     users,
 );
