@@ -23,4 +23,3 @@ COPY --from=builder /usr/src/api/.env .
 
 EXPOSE 3000
 CMD ["api"]
-
