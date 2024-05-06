@@ -6,12 +6,14 @@ CREATE TYPE access_level AS ENUM (
 );
 
 CREATE TABLE users (
-    id           BIGSERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
 
-    unilogin     CHAR(8)      NOT NULL UNIQUE,
+    unilogin CHAR(8) NOT NULL UNIQUE,
+    full_name VARCHAR(1024) NOT NULL,
+    
     access_level access_level NOT NULL,
     
-    is_admin     BOOLEAN      NOT NULL DEFAULT FALSE
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX unilogin ON users (unilogin);
