@@ -12,8 +12,9 @@ diesel::table! {
 
     forums (id) {
         id -> Int4,
-        #[max_length = 256]
-        name -> Varchar,
+        #[max_length = 128]
+        title -> Varchar,
+        description -> Text,
         access_level -> AccessLevel,
     }
 }
@@ -32,18 +33,10 @@ diesel::table! {
         forum_id -> Int4,
         sender_id -> Int4,
         reply_id -> Int8,
-        identity -> Int4,
+        identity_id -> Int4,
         contents -> Text,
+        is_published -> Bool,
         created_at -> Timestamptz,
-    }
-}
-
-diesel::table! {
-    topics (id) {
-        id -> Int4,
-        #[max_length = 128]
-        title -> Varchar,
-        content -> Text,
     }
 }
 
@@ -58,18 +51,16 @@ diesel::table! {
         #[max_length = 1024]
         full_name -> Varchar,
         access_level -> AccessLevel,
-        is_admin -> Bool,
     }
 }
 
 diesel::joinable!(messages -> forums (forum_id));
-diesel::joinable!(messages -> identities (identity));
+diesel::joinable!(messages -> identities (identity_id));
 diesel::joinable!(messages -> users (sender_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     forums,
     identities,
     messages,
-    topics,
     users,
 );
