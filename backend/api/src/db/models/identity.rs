@@ -10,4 +10,3 @@ pub struct Identity {
 
     pub value: String,
 }
-

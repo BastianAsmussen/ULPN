@@ -1,7 +1,7 @@
 use diesel::prelude::*;
 
-use crate::db::schema::forums;
 use super::user::AccessLevel;
+use crate::db::schema::forums;
 
 #[derive(Debug, Queryable, Selectable, Identifiable)]
 #[diesel(table_name = forums)]

@@ -20,4 +20,3 @@ pub struct Message {
 
     pub created_at: DateTime<Utc>,
 }
-

@@ -19,4 +19,3 @@ impl App {
         Ok(self.db_pool.get().await?)
     }
 }
-

@@ -1,25 +1,26 @@
+use actix_web::{web::Data, App, HttpServer};
 use anyhow::Result;
-use axum::Router;
-
-use tracing::debug;
 
 use state::App as AppState;
 
 mod db;
+mod routes;
 mod state;
 
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> Result<()> {
     dotenvy::dotenv()?;
     tracing_subscriber::fmt::init();
 
     let state = AppState::new(db::init().await?);
-    
-    let app = Router::new();
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;
-
-    debug!("Listening on {}...", listener.local_addr()?);
-    axum::serve(listener, app).await?;
+    HttpServer::new(move || {
+        App::new()
+            .app_data(Data::new(state.clone()))
+    })
+    .bind(("0.0.0.0", 3000))?
+    .run()
+    .await?;
 
     Ok(())
 }
+
