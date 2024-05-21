@@ -1,10 +1,6 @@
 # Usage
 
-## Environment
+## Secrets
 
-Create a file called `database.env` in the backend root:
-```
-POSTGRES_USER="postgres"
-POSTGRES_PASSWORD="toor"
-POSTGRES_DB="ulpn"
-```
+Create a file at `secrets/db/password.txt`.
+
