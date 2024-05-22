@@ -7,4 +7,3 @@ pub struct Credentials {
 }
 
 // Implementation details: https://viden.stil.dk/display/OFFSKOLELOGIN/Implementering+af+tjeneste#tab-OIDC+-+Login+endpoint+og+parametre
-
