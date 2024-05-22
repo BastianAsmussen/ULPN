@@ -5,7 +5,9 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1.37.0", features = ["full"] }
-anyhow = "1.0.82"
+
+anyhow = "1.0.86"
+thiserror = "1.0.61"
 
 dotenvy = "0.15.7"
 

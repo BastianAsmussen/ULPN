@@ -5,8 +5,9 @@ use diesel_async::{
 };
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
-use anyhow::Result;
 use tracing::debug;
+
+use anyhow::Result;
 
 pub mod models;
 #[allow(clippy::wildcard_imports)]

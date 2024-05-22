@@ -5,9 +5,9 @@ use crate::db::schema::users;
 
 use anyhow::Result;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, diesel_derive_enum::DbEnum, Serialize)]
+#[derive(Debug, diesel_derive_enum::DbEnum, Serialize, Deserialize, Clone)]
 #[ExistingTypePath = "crate::db::schema::sql_types::AccessLevel"]
 pub enum AccessLevel {
     Child,
@@ -75,6 +75,18 @@ impl User {
 
         let results = users
             .filter(access_level.eq(value))
+            .select(Self::as_select())
+            .limit(limit)
+            .load(conn)
+            .await?;
+
+        Ok(results)
+    }
+
+    pub async fn all(conn: &mut AsyncPgConnection, limit: i64) -> Result<Vec<Self>> {
+        use crate::db::schema::users::dsl::users;
+
+        let results = users
             .select(Self::as_select())
             .limit(limit)
             .load(conn)
