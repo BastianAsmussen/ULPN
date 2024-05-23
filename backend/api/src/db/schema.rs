@@ -22,8 +22,10 @@ diesel::table! {
 diesel::table! {
     identities (id) {
         id -> Int4,
+        owner_id -> Int4,
+        forum_id -> Int4,
         #[max_length = 255]
-        value -> Varchar,
+        name -> Varchar,
     }
 }
 
@@ -54,8 +56,15 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(identities -> forums (forum_id));
+diesel::joinable!(identities -> users (owner_id));
 diesel::joinable!(messages -> forums (forum_id));
 diesel::joinable!(messages -> identities (identity_id));
 diesel::joinable!(messages -> users (sender_id));
 
-diesel::allow_tables_to_appear_in_same_query!(forums, identities, messages, users,);
+diesel::allow_tables_to_appear_in_same_query!(
+    forums,
+    identities,
+    messages,
+    users,
+);
