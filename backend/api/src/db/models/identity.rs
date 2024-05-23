@@ -11,7 +11,10 @@ use anyhow::Result;
 pub struct Identity {
     pub id: i32,
 
-    pub value: String,
+    pub owner_id: i32,
+    pub forum_id: i32,
+
+    pub name: String,
 }
 
 impl Identity {
@@ -27,39 +30,27 @@ impl Identity {
         Ok(result)
     }
 
-    pub async fn by_value(conn: &mut AsyncPgConnection, value: &str) -> Result<Self> {
+    pub async fn by_owner_id(conn: &mut AsyncPgConnection, owner_id: i32) -> Result<Vec<Self>> {
         use crate::db::schema::identities::dsl::identities;
 
         let result = identities
-            .filter(crate::db::schema::identities::dsl::value.eq(value))
+            .filter(crate::db::schema::identities::owner_id.eq(owner_id))
             .select(Self::as_select())
-            .first(conn)
+            .load(conn)
             .await?;
 
         Ok(result)
     }
 
-    pub async fn by_values(conn: &mut AsyncPgConnection, values: Vec<&str>) -> Result<Vec<Self>> {
+    pub async fn by_forum_id(conn: &mut AsyncPgConnection, forum_id: i32) -> Result<Vec<Self>> {
         use crate::db::schema::identities::dsl::identities;
 
-        let results = identities
-            .filter(crate::db::schema::identities::dsl::value.eq_any(values))
+        let result = identities
+            .filter(crate::db::schema::identities::forum_id.eq(forum_id))
             .select(Self::as_select())
             .load(conn)
             .await?;
 
-        Ok(results)
-    }
-    
-    pub async fn all(conn: &mut AsyncPgConnection, limit: i64) -> Result<Vec<Self>> {
-        use crate::db::schema::identities::dsl::identities;
-
-        let results = identities
-            .select(Self::as_select())
-            .limit(limit)
-            .load(conn)
-            .await?;
-
-        Ok(results)
+        Ok(result)
     }
 }
