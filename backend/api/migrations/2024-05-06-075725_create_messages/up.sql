@@ -12,4 +12,3 @@ CREATE TABLE messages (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-

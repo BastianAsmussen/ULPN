@@ -6,4 +6,3 @@ CREATE TABLE forums (
 
     access_level access_level NOT NULL
 );
-

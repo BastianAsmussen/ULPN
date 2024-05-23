@@ -15,4 +15,3 @@ CREATE TABLE users (
 );
 
 CREATE INDEX unilogin ON users (unilogin);
-

@@ -3,4 +3,3 @@ CREATE TABLE identities (
 
     value VARCHAR(255) NOT NULL
 );
-
