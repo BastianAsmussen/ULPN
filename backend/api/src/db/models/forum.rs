@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::db::schema::forums;
 use crate::db::schema::forums::{access_level, description, title};
-use crate::db::schema::users::all_columns;
 
 use super::user::AccessLevel;
 
