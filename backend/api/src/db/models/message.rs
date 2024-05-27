@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use diesel::prelude::*;
 use diesel_async::{AsyncPgConnection, RunQueryDsl};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::db::schema::messages;
 
@@ -150,5 +150,34 @@ impl Message {
             .await?;
 
         Ok(results)
+    }
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = messages)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
+#[serde(rename_all = "camelCase")]
+pub struct NewMessage {
+    pub forum_id: i32,
+    pub sender_id: i32,
+    
+    pub reply_id: Option<i64>,
+    pub identity_id: i32,
+    
+    pub contents: String,
+    pub is_published: bool,
+}
+
+impl NewMessage {
+    pub async fn insert(self, conn: &mut AsyncPgConnection) -> Result<Message> {
+        use crate::db::schema::messages::dsl::messages;
+
+        let result = diesel::insert_into(messages)
+            .values(&self)
+            .returning(Message::as_select())
+            .get_result(conn)
+            .await?;
+
+        Ok(result)
     }
 }

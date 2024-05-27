@@ -4,6 +4,7 @@ use thiserror::Error;
 
 pub mod forum;
 pub mod user;
+mod message;
 
 #[derive(Debug, Error)]
 pub enum APIError {
