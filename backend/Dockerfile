@@ -8,7 +8,6 @@ WORKDIR /app
 # Install the required system dependencies.
 RUN apt-get update && \
     apt-get install -y \
-    libssl-dev \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -31,6 +30,12 @@ cargo build --locked --release && \
 cp ./target/release/$APP_NAME /bin/server
 
 FROM debian:buster-slim AS final
+
+# Install the required system dependencies.
+RUN apt-get update && \
+    apt-get install -y \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 ARG UID=10001
 RUN adduser \
