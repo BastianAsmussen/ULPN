@@ -6,3 +6,14 @@ CREATE TABLE forums (
 
     access_level access_level NOT NULL
 );
+
+INSERT INTO forums (
+    title,
+    description,
+    access_level
+) VALUES (
+    'General',
+    'No memes in #general, please!',
+    'child'
+);
+
