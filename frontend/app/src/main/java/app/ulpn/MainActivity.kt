@@ -1,6 +1,7 @@
 package app.ulpn
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
@@ -11,6 +12,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.navigation.NavArgument
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.get
@@ -52,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_dynamic, R.id.nav_slideshow
+                R.id.nav_home
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -64,37 +66,42 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.main, menu)
 
         // Get the group to which new items will be added
-        val group = menu.findItem(R.id.forums_group)?.subMenu
+        val group = menu.findItem(R.id.forum_group)?.subMenu
+
+        // Get the NavController
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
 
         // Iterate over the list of forums and add menu items for each forum
         forums.forEach { forum ->
+            Log.d("ForumDebug", "Adding forum with ID: ${forum.id}")
             val menuItem = group?.add(Menu.NONE, forum.id, Menu.NONE, forum.title)
                 ?.setIcon(R.drawable.ic_menu_camera)
 
             menuItem?.setOnMenuItemClickListener {
-                // Get the NavController
-                val navController = findNavController(R.id.nav_host_fragment_content_main)
-
-                // Create a FragmentNavigator.Destination and set it up
-                val destination = FragmentNavigator.Destination(
-                    navController.navigatorProvider.getNavigator(FragmentNavigator::class.java)
-                )
-                destination.id = forum.id
-                destination.addArgument("forumId", NavArgument.Builder().setDefaultValue(forum.id).build())
-
-                // Add the destination to the navigation graph
-                val navGraph = navController.graph
-                navGraph.addDestination(destination)
+                // Create a Bundle for arguments
+                val args = bundleOf("forumId" to forum.id)
 
                 // Navigate to the new destination
-                navController.navigate(forum.id)
+                navController.navigate(forum.id, args)
 
                 true
+            }
+
+            // Add the destination to the navigation graph if it doesn't already exist
+            if (navController.graph.findNode(forum.id) == null) {
+                val destination = FragmentNavigator.Destination(
+                    navController.navigatorProvider.getNavigator(FragmentNavigator::class.java)
+                ).apply {
+                    id = forum.id
+                    addArgument("forumId", NavArgument.Builder().setDefaultValue(forum.id).build())
+                }
+                navController.graph.addDestination(destination)
             }
         }
 
         return true
     }
+
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
