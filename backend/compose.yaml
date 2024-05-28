@@ -5,9 +5,15 @@ services:
       target: final
     ports:
       - 3000:3000
+    env_file:
+        - .env
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      backend:
+        ipv4_address: 10.0.0.3
+      frontend:
   db:
     image: postgres
     restart: always
@@ -26,6 +32,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      backend:
+        ipv4_address: 10.0.0.2
 
 volumes:
   db-data:
@@ -33,3 +42,14 @@ volumes:
 secrets:
   db-password:
     file: secrets/db/password.txt
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/29
+          gateway: 10.0.0.1
+  frontend:
+    driver: bridge
+
