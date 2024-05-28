@@ -13,9 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.navigation.NavArgument
-import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.get
+import androidx.core.view.GravityCompat
 import app.ulpn.databinding.ActivityMainBinding
 import app.ulpn.R
 
@@ -41,11 +39,6 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
-        }
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
@@ -59,49 +52,28 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // Dynamically add forums to the navigation view
+        val menu = navView.menu
+        forums.forEach { forum ->
+            menu.add(R.id.nav_home, forum.id, Menu.NONE, forum.title)
+        }
+
+        // Set an OnNavigationItemSelectedListener to handle navigation when a forum is selected
+        navView.setNavigationItemSelectedListener { menuItem ->
+            val forumId = menuItem.itemId
+            val bundle = bundleOf("forumId" to forumId)
+            navController.navigate(R.id.nav_slideshow, bundle)
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
-
-        // Get the group to which new items will be added
-        val group = menu.findItem(R.id.forum_group)?.subMenu
-
-        // Get the NavController
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-
-        // Iterate over the list of forums and add menu items for each forum
-        forums.forEach { forum ->
-            Log.d("ForumDebug", "Adding forum with ID: ${forum.id}")
-            val menuItem = group?.add(Menu.NONE, forum.id, Menu.NONE, forum.title)
-                ?.setIcon(R.drawable.ic_menu_camera)
-
-            menuItem?.setOnMenuItemClickListener {
-                // Create a Bundle for arguments
-                val args = bundleOf("forumId" to forum.id)
-
-                // Navigate to the new destination
-                navController.navigate(forum.id, args)
-
-                true
-            }
-
-            // Add the destination to the navigation graph if it doesn't already exist
-            if (navController.graph.findNode(forum.id) == null) {
-                val destination = FragmentNavigator.Destination(
-                    navController.navigatorProvider.getNavigator(FragmentNavigator::class.java)
-                ).apply {
-                    id = forum.id
-                    addArgument("forumId", NavArgument.Builder().setDefaultValue(forum.id).build())
-                }
-                navController.graph.addDestination(destination)
-            }
-        }
 
         return true
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
