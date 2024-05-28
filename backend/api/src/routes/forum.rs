@@ -1,12 +1,16 @@
 use crate::db::models::forum::{Forum, NewForum};
-use actix_web::web::{Data, Json, Path};
-use actix_web::{delete, get, post, HttpResponse};
+use actix_web::web::{Data, Json, Path, Query};
+use actix_web::{delete, get, post, HttpResponse, Responder};
+use serde::Deserialize;
 
 use crate::routes::APIError;
 use crate::state::App;
 
 #[post("/forum")]
-pub async fn create_forum(app: Data<App>, forum: Json<NewForum>) -> Result<HttpResponse, APIError> {
+pub async fn create_forum(
+    app: Data<App>,
+    forum: Json<NewForum>,
+) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
@@ -20,8 +24,28 @@ pub async fn create_forum(app: Data<App>, forum: Json<NewForum>) -> Result<HttpR
     Ok(HttpResponse::Created().json(forum))
 }
 
+#[derive(Deserialize)]
+pub struct Info {
+    pub limit: Option<i64>,
+}
+
+#[get("/forum")]
+pub async fn get_forums(app: Data<App>, info: Query<Info>) -> Result<impl Responder, APIError> {
+    let limit = info.limit.unwrap_or(10);
+
+    let mut conn = app
+        .establish_connection()
+        .await
+        .map_err(|_| APIError::InternalServerError)?;
+    let forums = Forum::all(&mut conn, limit)
+        .await
+        .map_err(|_| APIError::InternalServerError)?;
+
+    Ok(HttpResponse::Ok().json(forums))
+}
+
 #[get("/forum/{forum_id}")]
-pub async fn get_forum(app: Data<App>, forum_id: Path<i32>) -> Result<HttpResponse, APIError> {
+pub async fn get_forum(app: Data<App>, forum_id: Path<i32>) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
@@ -38,7 +62,7 @@ pub async fn update_forum(
     app: Data<App>,
     forum_id: Path<i32>,
     forum: Json<NewForum>,
-) -> Result<HttpResponse, APIError> {
+) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
@@ -53,7 +77,7 @@ pub async fn update_forum(
 }
 
 #[delete("/forum/{forum_id}")]
-pub async fn delete_forum(app: Data<App>, forum_id: Path<i32>) -> Result<HttpResponse, APIError> {
+pub async fn delete_forum(app: Data<App>, forum_id: Path<i32>) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await

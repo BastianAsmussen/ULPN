@@ -3,8 +3,8 @@ use actix_web::{HttpResponse, ResponseError};
 use thiserror::Error;
 
 pub mod forum;
+pub mod message;
 pub mod user;
-mod message;
 
 #[derive(Debug, Error)]
 pub enum APIError {

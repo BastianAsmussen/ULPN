@@ -1,23 +1,28 @@
-use actix_web::{App, HttpServer, web::Data};
+use actix_web::{web::Data, App, HttpServer};
 
 use state::App as AppState;
-
-use anyhow::Result;
 
 mod db;
 mod routes;
 mod state;
 
-#[tokio::main]
-async fn main() -> Result<()> {
-    dotenvy::dotenv()?;
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    dotenvy::dotenv().ok();
     tracing_subscriber::fmt::init();
 
-    let state = AppState::new(db::init().await?);
-    HttpServer::new(move || App::new().app_data(Data::new(state.clone())))
-        .bind(("0.0.0.0", 3000))?
-        .run()
-        .await?;
-
-    Ok(())
+    let state = AppState::new(db::init().await.expect("Failed to connect to database!"));
+    HttpServer::new(move || {
+        App::new()
+            .app_data(Data::new(state.clone()))
+            .service(routes::forum::create_forum)
+            .service(routes::forum::get_forums)
+            .service(routes::forum::get_forum)
+            .service(routes::forum::update_forum)
+            .service(routes::forum::delete_forum)
+            .service(routes::message::send_message)
+    })
+    .bind(("0.0.0.0", 3000))?
+    .run()
+    .await
 }

@@ -160,10 +160,10 @@ impl Message {
 pub struct NewMessage {
     pub forum_id: i32,
     pub sender_id: i32,
-    
+
     pub reply_id: Option<i64>,
     pub identity_id: i32,
-    
+
     pub contents: String,
     pub is_published: bool,
 }
