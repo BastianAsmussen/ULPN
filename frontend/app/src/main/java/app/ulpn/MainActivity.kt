@@ -16,22 +16,44 @@ import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import app.ulpn.databinding.ActivityMainBinding
 import app.ulpn.R
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.JsonRequest
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 
 data class Forum(val id: Int, val title: String)
-
 class MainActivity : AppCompatActivity() {
+    private val apiSample = "http://10.161.4.102:3000/forum" // TODO: Change to server IP!
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
-    // List of forums
-    private val forums = listOf(
-        Forum(1, "Forum 1"),
-        Forum(2, "Forum 2"),
-        Forum(3, "Forum 3")
-    )
+    private var forums = arrayListOf<Forum>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val reqQueue: RequestQueue = Volley.newRequestQueue(this)
+        val request = JsonArrayRequest(Request.Method.GET,apiSample, null, { result ->
+
+            for (i in 0 until result.length() ){
+                val jsonObj = result.getJSONObject(i)
+
+                val forum = Forum(
+                    jsonObj.getInt("id"),
+                    jsonObj.getString("title")
+                )
+
+                forums.add(forum)
+            }
+            Log.d("ULPN API", forums.toString())
+
+        },{err ->
+            Log.e("ULPN API", err.message.toString())
+        })
+
+        reqQueue.add(request)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
