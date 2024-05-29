@@ -10,12 +10,15 @@ pub mod user;
 pub enum APIError {
     #[error("Internal Server Error")]
     InternalServerError,
+    #[error("Bad Request")]
+    BadRequest,
 }
 
 impl ResponseError for APIError {
     fn status_code(&self) -> StatusCode {
         match *self {
             Self::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::BadRequest => StatusCode::BAD_REQUEST,
         }
     }
 
