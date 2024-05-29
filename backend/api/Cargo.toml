@@ -25,3 +25,5 @@ diesel_migrations = "2.1.0"
 diesel-derive-enum = { version = "2.1.0", features = ["postgres"] }
 
 chrono = { version = "0.4.38", features = ["serde"] }
+
+actix_web_openidconnect = "0.1.2"
