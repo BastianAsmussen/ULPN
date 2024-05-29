@@ -19,12 +19,10 @@ import app.ulpn.R
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.JsonRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 
 data class Forum(val id: Int, val title: String)
+
 class MainActivity : AppCompatActivity() {
     private val apiSample = "http://10.161.4.102:3000/forum" // TODO: Change to server IP!
 
@@ -34,26 +32,6 @@ class MainActivity : AppCompatActivity() {
     private var forums = arrayListOf<Forum>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val reqQueue: RequestQueue = Volley.newRequestQueue(this)
-        val request = JsonArrayRequest(Request.Method.GET,apiSample, null, { result ->
-
-            for (i in 0 until result.length() ){
-                val jsonObj = result.getJSONObject(i)
-
-                val forum = Forum(
-                    jsonObj.getInt("id"),
-                    jsonObj.getString("title")
-                )
-
-                forums.add(forum)
-            }
-            Log.d("ULPN API", forums.toString())
-
-        },{err ->
-            Log.e("ULPN API", err.message.toString())
-        })
-
-        reqQueue.add(request)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -75,25 +53,52 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        // Dynamically add forums to the navigation view
-        val menu = navView.menu
-        forums.forEach { forum ->
-            menu.add(R.id.nav_home, forum.id, Menu.NONE, forum.title)
-        }
+        // Fetch forums from the API
+        fetchForums { forums ->
+            val menu = navView.menu
+            forums.forEach { forum ->
+                val menuItem = menu.add(R.id.nav_home, forum.id, Menu.NONE, forum.title)
+                menuItem.setOnMenuItemClickListener {
 
-        // Set an OnNavigationItemSelectedListener to handle navigation when a forum is selected
-        navView.setNavigationItemSelectedListener { menuItem ->
-            val forumId = menuItem.itemId
-            val bundle = bundleOf("forumId" to forumId)
-            navController.navigate(R.id.nav_slideshow, bundle)
-            drawerLayout.closeDrawer(GravityCompat.START)
-            true
+                    val bundle = bundleOf("forumId" to forum.id, "forumTitle" to forum.title)
+
+                    // Dynamically update the label for nav_dynamic
+                    val navInflater = navController.navInflater
+                    val navGraph = navInflater.inflate(R.navigation.mobile_navigation)
+                    navGraph.findNode(R.id.nav_dynamic)?.label = forum.title
+                    navController.graph = navGraph
+
+                    navController.navigate(R.id.nav_dynamic, bundle)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+            }
         }
+    }
+
+    private fun fetchForums(callback: (List<Forum>) -> Unit) {
+        val reqQueue: RequestQueue = Volley.newRequestQueue(this)
+        val request = JsonArrayRequest(Request.Method.GET, apiSample, null, { result ->
+            val forums = arrayListOf<Forum>()
+            for (i in 0 until result.length()) {
+                val jsonObj = result.getJSONObject(i)
+                val forum = Forum(
+                    jsonObj.getInt("id"),
+                    jsonObj.getString("title")
+                )
+                forums.add(forum)
+            }
+            Log.d("ULPN API", forums.toString())
+            callback(forums)
+        }, { err ->
+            Log.e("ULPN API", err.message.toString())
+        })
+
+        reqQueue.add(request)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-
         return true
     }
 

@@ -13,14 +13,13 @@
     <fragment
         android:id="@+id/nav_dynamic"
         android:name="app.ulpn.ui.ForumFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_forum" />
+        android:label=""
+        tools:layout="@layout/fragment_forum">
+    </fragment>
 
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="app.ulpn.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
-
-    <!-- Dynamically added forum destinations will appear here -->
 </navigation>

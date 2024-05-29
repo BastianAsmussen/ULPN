@@ -3,15 +3,10 @@
     tools:showIn="navigation_view">
 
     <group android:id="@+id/forum_group" android:checkableBehavior="single">
-        <!-- Placeholder items for dynamic menu items -->
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_camera"
             android:title="@string/menu_home" />
-        <item
-            android:id="@+id/nav_dynamic"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"

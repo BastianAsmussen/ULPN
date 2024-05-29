@@ -8,9 +8,5 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="placeholder_forum_1">\ns\n</string>
-    <string name="placeholder_forum_2">sadasd\n</string>
-    <string name="placeholder_forum_3">okowdk</string>
 </resources>
