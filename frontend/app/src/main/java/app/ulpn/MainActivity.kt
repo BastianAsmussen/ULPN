@@ -14,12 +14,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import app.ulpn.databinding.ActivityMainBinding
+import app.ulpn.ui.Forum
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 
-data class Forum(val id: Int, val title: String)
 
 class MainActivity : AppCompatActivity() {
     private val apiSample = "http://10.161.4.102:3000/forum" // TODO: Change to server IP!
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                 val menuItem = menu.add(R.id.nav_home, forum.id, Menu.NONE, forum.title)
                 menuItem.setOnMenuItemClickListener {
 
-                    val bundle = bundleOf("forumId" to forum.id, "forumTitle" to forum.title)
+                    val bundle = bundleOf("forumId" to forum.id, "forumTitle" to forum.title, "description" to forum.description)
 
                     // Dynamically update the label for nav_dynamic
                     val navInflater = navController.navInflater
@@ -82,7 +82,8 @@ class MainActivity : AppCompatActivity() {
                 val jsonObj = result.getJSONObject(i)
                 val forum = Forum(
                     jsonObj.getInt("id"),
-                    jsonObj.getString("title")
+                    jsonObj.getString("title"),
+                    jsonObj.getString("description")
                 )
                 forums.add(forum)
             }

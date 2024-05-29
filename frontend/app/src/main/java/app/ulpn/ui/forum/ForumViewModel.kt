@@ -9,5 +9,10 @@ class ForumViewModel : ViewModel() {
     private val _text = MutableLiveData<String>().apply {
         value = "This is forum Fragment"
     }
+
+    fun updateText(newText: String) {
+        _text.value = newText
+    }
+
     val text: LiveData<String> = _text
 }
