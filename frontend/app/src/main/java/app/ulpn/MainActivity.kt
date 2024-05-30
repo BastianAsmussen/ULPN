@@ -3,22 +3,23 @@ package app.ulpn
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
-import androidx.core.view.GravityCompat
 import app.ulpn.databinding.ActivityMainBinding
 import app.ulpn.ui.Forum
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
+import com.google.android.material.navigation.NavigationView
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
                     val navGraph = navInflater.inflate(R.navigation.mobile_navigation)
                     navGraph.findNode(R.id.nav_dynamic)?.label = forum.title
                     navController.graph = navGraph
+
 
                     navController.navigate(R.id.nav_dynamic, bundle)
                     drawerLayout.closeDrawer(GravityCompat.START)

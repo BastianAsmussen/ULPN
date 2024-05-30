@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.ir.backend.js.compile
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -39,7 +41,7 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.markdownview.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -49,6 +51,8 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.volley)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

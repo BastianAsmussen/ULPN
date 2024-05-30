@@ -5,9 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import app.ulpn.R
 import app.ulpn.databinding.FragmentHomeBinding
+import app.ulpn.ui.MarkdownText
+import java.net.URL
+
 
 class HomeFragment : Fragment() {
 
@@ -22,6 +30,20 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        val markdown = binding.markdown
+        markdown.apply {
+            // Dispose of the Composition when the view's LifecycleOwner is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                // In Compose world
+                MaterialTheme {
+                    MarkdownText(
+                        "## HEJ"
+                    )
+                }
+            }
+        }
         val homeViewModel =
             ViewModelProvider(this)[HomeViewModel::class.java]
 
