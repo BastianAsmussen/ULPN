@@ -4,14 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import app.ulpn.databinding.FragmentHomeBinding
+import io.noties.markwon.Markwon
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
+    private lateinit var markwon: Markwon
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -28,10 +29,12 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        val textView = binding.textHome
+        markwon = Markwon.create(requireContext())
+        homeViewModel.text.observe(viewLifecycleOwner) { markdownText ->
+            markwon.setMarkdown(textView, markdownText)
         }
+
         return root
     }
 
