@@ -1,6 +1,7 @@
 use crate::db::models::forum::{Forum, NewForum};
 use actix_web::web::{Data, Json, Path, Query};
 use actix_web::{delete, get, post, HttpResponse, Responder};
+use actix_web_openidconnect::openid_middleware::Authenticated;
 use serde::Deserialize;
 
 use crate::routes::APIError;
@@ -9,6 +10,7 @@ use crate::state::App;
 #[post("/forum")]
 pub async fn create_forum(
     app: Data<App>,
+    auth: Authenticated,
     forum: Json<NewForum>,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
