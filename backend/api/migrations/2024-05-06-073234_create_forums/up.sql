@@ -17,3 +17,12 @@ INSERT INTO forums (
     'child'
 );
 
+INSERT INTO forums (
+    title,
+    description,
+    access_level
+) VALUES (
+    'Other',
+    'Hello there!',
+    'parent'
+);
