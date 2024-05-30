@@ -8,7 +8,9 @@ WORKDIR /app
 # Install the required system dependencies.
 RUN apt-get update && \
     apt-get install -y \
+    pkg-config \
     libpq-dev \
+    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Build the application.
