@@ -7,7 +7,7 @@ use serde::Deserialize;
 use crate::routes::APIError;
 use crate::state::App;
 
-#[post("/forum")]
+#[post("/no-auth/forum")]
 pub async fn create_forum(
     app: Data<App>,
     auth: Authenticated,
@@ -31,7 +31,7 @@ pub struct Info {
     pub limit: Option<i64>,
 }
 
-#[get("/forum")]
+#[get("/no-auth/forum")]
 pub async fn get_forums(app: Data<App>, info: Query<Info>) -> Result<impl Responder, APIError> {
     let limit = info.limit.unwrap_or(10);
 
@@ -46,7 +46,7 @@ pub async fn get_forums(app: Data<App>, info: Query<Info>) -> Result<impl Respon
     Ok(HttpResponse::Ok().json(forums))
 }
 
-#[get("/forum/{forum_id}")]
+#[get("/no-auth/forum/{forum_id}")]
 pub async fn get_forum(app: Data<App>, forum_id: Path<i32>) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
@@ -59,7 +59,7 @@ pub async fn get_forum(app: Data<App>, forum_id: Path<i32>) -> Result<impl Respo
     Ok(HttpResponse::Ok().json(forum))
 }
 
-#[post("/forum/{forum_id}")]
+#[post("/no-auth/forum/{forum_id}")]
 pub async fn update_forum(
     app: Data<App>,
     forum_id: Path<i32>,
@@ -78,7 +78,7 @@ pub async fn update_forum(
     Ok(HttpResponse::Ok().json(forum))
 }
 
-#[delete("/forum/{forum_id}")]
+#[delete("/no-auth/forum/{forum_id}")]
 pub async fn delete_forum(app: Data<App>, forum_id: Path<i32>) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
