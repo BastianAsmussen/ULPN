@@ -31,8 +31,8 @@ async fn main() -> std::io::Result<()> {
     let state = AppState::new(db::init().await.expect("Failed to connect to database!"));
     HttpServer::new(move || {
         App::new()
-            .wrap(openid.get_middleware())
-            .configure(openid.configure_open_id())
+//          .wrap(openid.get_middleware())
+//          .configure(openid.configure_open_id())
             .app_data(Data::new(state.clone()))
             .service(routes::forum::create_forum)
             .service(routes::forum::get_forums)
