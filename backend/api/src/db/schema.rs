@@ -48,10 +48,10 @@ diesel::table! {
 
     users (id) {
         id -> Int4,
-        #[max_length = 8]
-        unilogin -> Bpchar,
         #[max_length = 1024]
         full_name -> Varchar,
+        #[max_length = 255]
+        email -> Varchar,
         access_level -> AccessLevel,
     }
 }

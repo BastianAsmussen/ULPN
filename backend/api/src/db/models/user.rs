@@ -22,8 +22,8 @@ pub enum AccessLevel {
 pub struct User {
     pub id: i32,
 
-    pub unilogin: String,
     pub full_name: String,
+    pub email: String,
 
     pub access_level: AccessLevel,
 }
@@ -37,11 +37,11 @@ impl User {
         Ok(result)
     }
 
-    pub async fn by_unilogin(conn: &mut AsyncPgConnection, value: &str) -> Result<Self> {
-        use crate::db::schema::users::dsl::{unilogin, users};
+    pub async fn by_email(conn: &mut AsyncPgConnection, value: &str) -> Result<Self> {
+        use crate::db::schema::users::dsl::{email, users};
 
         let result = users
-            .filter(unilogin.eq(value))
+            .filter(email.eq(value))
             .select(Self::as_select())
             .first(conn)
             .await?;
@@ -93,5 +93,28 @@ impl User {
             .await?;
 
         Ok(results)
+    }
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = users)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
+pub struct NewUser {
+    pub full_name: String,
+    pub email: String,
+    pub access_level: AccessLevel,
+}
+
+impl NewUser {
+    pub async fn insert(self, conn: &mut AsyncPgConnection) -> Result<User> {
+        use crate::db::schema::users::dsl::users;
+
+        let result = diesel::insert_into(users)
+            .values(&self)
+            .returning(User::as_select())
+            .get_result(conn)
+            .await?;
+
+        Ok(result)
     }
 }

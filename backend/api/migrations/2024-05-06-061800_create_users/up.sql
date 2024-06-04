@@ -1,5 +1,5 @@
 CREATE TYPE access_level AS ENUM (
-    'child', 
+    'child',
     'parent',
     'professional',
     'administrator'
@@ -8,10 +8,10 @@ CREATE TYPE access_level AS ENUM (
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
 
-    unilogin CHAR(8) NOT NULL UNIQUE,
     full_name VARCHAR(1024) NOT NULL,
-    
+    email VARCHAR(255) NOT NULL UNIQUE,
+
     access_level access_level NOT NULL
 );
 
-CREATE INDEX unilogin ON users (unilogin);
+CREATE INDEX email_idx ON users(email);
