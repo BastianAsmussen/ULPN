@@ -16,7 +16,7 @@ pub struct Forum {
 
     pub title: String,
     pub description: String,
-
+    
     pub access_level: AccessLevel,
 }
 
