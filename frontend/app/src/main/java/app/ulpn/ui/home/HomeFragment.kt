@@ -29,7 +29,7 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView = binding.textHome
+        val textView = binding.description
         markwon = Markwon.create(requireContext())
         homeViewModel.text.observe(viewLifecycleOwner) { markdownText ->
             markwon.setMarkdown(textView, markdownText)

@@ -8,31 +8,15 @@ class HomeViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>()
     val text: LiveData<String> = _text
-
     init {
         // Example Markdown text
         val markdownText = """
-            # Hello Markdown
+            Hjælp dit barn eller dine børn med at beskytte sig på de forskellige apps og medier, 
+            så de bliver bedst udrustettil den digitale verden. Hvorpå den svære samtale gøres nemmere, 
+            når man skal italesætte problematikker derkan opstå når man begår sig online.
+
             
-            This is a **bold** text and *italic* text.
-            
-            ## List
-            
-            - Item 1
-            - Item 2
-            - Item 3
-            
-            ## Link
-            
-            [OpenAI](https://www.openai.com/)
-            
-            ## Code
-            
-            ```
-            fun main() {
-                println("Hello, Markdown!")
-            }
-            ```
+  
         """.trimIndent()
 
         _text.value = markdownText
