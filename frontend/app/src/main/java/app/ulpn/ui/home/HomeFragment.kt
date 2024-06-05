@@ -80,7 +80,7 @@ class HomeFragment : Fragment() {
     }
 
     // Update button state based on sign-in status
-    private fun updateButtonState(button: MaterialButton) {
+    fun updateButtonState(button: MaterialButton) {
         val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
         if (account != null) {
             button.text = getString(R.string.logout)
