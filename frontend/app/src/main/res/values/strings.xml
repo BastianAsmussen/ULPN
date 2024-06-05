@@ -5,7 +5,7 @@
     <string name="nav_header_title">De Unges Liv på Nettet</string>
     <string name="nav_header_subtitle">Kontakt: ####@####.###</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_login">Login</string>
 
     <string name="home_title">Jeg har ret til privatliv</string>
     <string name="home_desc">No Text. </string>
@@ -14,4 +14,7 @@
 
     <string name="menu_home">Home</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="logout">logout</string>
+    <string name="login_with_google">login with gmail</string>
+    <string name="google_sign_in_failed">Failed to sign in</string>
 </resources>

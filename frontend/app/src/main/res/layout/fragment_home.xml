@@ -47,11 +47,11 @@
         android:layout_marginEnd="16dp"/>
 
     <!-- Login button in the middle of the screen -->
-    <Button
-        android:id="@+id/login_button"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/login_with_google_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login med GMail"
+        android:text="Login with Google"
         app:layout_constraintTop_toBottomOf="@+id/description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
