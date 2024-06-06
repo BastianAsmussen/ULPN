@@ -4,7 +4,7 @@ use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use serde::{Deserialize, Serialize};
 
 use crate::db::schema::forums;
-use crate::db::schema::forums::{access_level, description, title};
+use crate::db::schema::forums::{access_level, description, is_locked, title};
 
 use super::user::AccessLevel;
 
@@ -16,6 +16,8 @@ pub struct Forum {
 
     pub title: String,
     pub description: String,
+    
+    pub is_locked: bool,
     
     pub access_level: AccessLevel,
 }
@@ -107,6 +109,19 @@ impl Forum {
 
         Ok(results)
     }
+    
+    pub async fn by_is_locked(conn: &mut AsyncPgConnection, value: bool, limit: i64) -> Result<Vec<Self>> {
+        use crate::db::schema::forums::dsl::{forums, is_locked};
+
+        let results = forums
+            .filter(is_locked.eq(value))
+            .select(Self::as_select())
+            .limit(limit)
+            .load(conn)
+            .await?;
+
+        Ok(results)
+    }
 
     pub async fn all(conn: &mut AsyncPgConnection, limit: i64) -> Result<Vec<Self>> {
         use crate::db::schema::forums::dsl::forums;
@@ -137,6 +152,8 @@ impl Forum {
 pub struct NewForum {
     pub title: String,
     pub description: String,
+    
+    pub is_locked: bool,
 
     pub access_level: AccessLevel,
 }
@@ -161,7 +178,9 @@ impl NewForum {
             .set((
                 title.eq(&self.title),
                 description.eq(&self.description),
+                is_locked.eq(&self.is_locked),
                 access_level.eq(&self.access_level),
+                
             ))
             .returning(Forum::as_select())
             .get_result(conn)

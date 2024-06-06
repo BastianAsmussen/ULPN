@@ -15,6 +15,7 @@ diesel::table! {
         #[max_length = 128]
         title -> Varchar,
         description -> Text,
+        is_locked -> Bool,
         access_level -> AccessLevel,
     }
 }
@@ -62,4 +63,9 @@ diesel::joinable!(messages -> forums (forum_id));
 diesel::joinable!(messages -> identities (identity_id));
 diesel::joinable!(messages -> users (sender_id));
 
-diesel::allow_tables_to_appear_in_same_query!(forums, identities, messages, users,);
+diesel::allow_tables_to_appear_in_same_query!(
+    forums,
+    identities,
+    messages,
+    users,
+);
