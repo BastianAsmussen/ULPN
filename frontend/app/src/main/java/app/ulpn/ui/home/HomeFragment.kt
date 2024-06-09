@@ -9,10 +9,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import app.ulpn.ApiManager
+import app.ulpn.MainActivity
 import app.ulpn.R
 import app.ulpn.databinding.FragmentHomeBinding
+import app.ulpn.ui.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -101,6 +103,18 @@ class HomeFragment : Fragment() {
                 // Google Sign-In was successful
                 val account = task.getResult(ApiException::class.java)
                 Log.d(TAG, "signInWithGoogle:" + account.id)
+                val user = User(account.displayName ?: "", account.email ?: "", 1)
+                // Hash the user information
+                val hashedUser = user.hashUser()
+                Log.d(TAG, "User logged in: ${hashedUser}")
+
+                // Call the API to fetch forums with the hashed user
+                ApiManager(context).fetchForumsHash(hashedUser) { forums ->
+                    Log.d(TAG, "Forums fetched: $forums")
+                    (requireActivity() as MainActivity).addForumNavViews(forums) // Add them to the users view
+                }
+
+                // Update button state
                 updateButtonState(binding.loginWithGoogleButton)
 
             } catch (e: ApiException) {
@@ -115,7 +129,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
     companion object {
         private const val TAG = "HomeFragment"
     }
