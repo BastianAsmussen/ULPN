@@ -18,11 +18,13 @@ data class ApiManager(private val context: Context?) {
             val forums = arrayListOf<Forum>()
             for (i in 0 until result.length()) {
                 val jsonObj = result.getJSONObject(i)
+                val owner = if (jsonObj.has("owner")) jsonObj.getInt("owner") else 0
                 val forum = Forum(
                     jsonObj.getInt("id"),
                     jsonObj.getString("title"),
                     jsonObj.getString("description"),
-                    jsonObj.getBoolean("is_locked")
+                    jsonObj.getBoolean("is_locked"),
+                    owner
                 )
                 forums.add(forum)
             }
@@ -35,6 +37,7 @@ data class ApiManager(private val context: Context?) {
         reqQueue.add(request)
     }
 
+
     fun fetchForumsHash(userHash: String, callback: (List<Forum>) -> Unit) {
         val reqQueue: RequestQueue = Volley.newRequestQueue(context)
         val apiUrl = "$serverIp/forum/$userHash"
@@ -46,7 +49,8 @@ data class ApiManager(private val context: Context?) {
                     jsonObj.getInt("id"),
                     jsonObj.getString("title"),
                     jsonObj.getString("description"),
-                    jsonObj.getBoolean("is_locked")
+                    jsonObj.getBoolean("is_locked"),
+                    jsonObj.getInt("owner")
                 )
                 forums.add(forum)
             }

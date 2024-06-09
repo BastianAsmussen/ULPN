@@ -6,13 +6,17 @@ import androidx.lifecycle.ViewModel
 
 class ForumViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is forum Fragment"
+    private val _text = MutableLiveData<String>()
+    val text: LiveData<String> = _text
+
+    init {
+        val markdownText = """
+        """.trimIndent()
+
+        _text.value = markdownText
     }
 
     fun updateText(newText: String) {
         _text.value = newText
     }
-
-    val text: LiveData<String> = _text
 }
