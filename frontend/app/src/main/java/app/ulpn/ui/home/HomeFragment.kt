@@ -103,7 +103,8 @@ class HomeFragment : Fragment() {
                 // Google Sign-In was successful
                 val account = task.getResult(ApiException::class.java)
                 Log.d(TAG, "signInWithGoogle:" + account.id)
-                val user = User(account.displayName ?: "", account.email ?: "", 1)
+                val user = User.getInstance(account.displayName.toString(),account.email.toString())
+                user.setAccessLevel(1)
                 // Hash the user information
                 val hashedUser = user.hashUser()
                 Log.d(TAG, "User logged in: ${hashedUser}")
