@@ -8,16 +8,18 @@
     tools:context=".ui.home.HomeFragment">
 
     <!-- Banner at the top -->
+
+    <!-- Title under the banner -->
     <View
         android:id="@+id/banner"
         android:layout_width="0dp"
-        android:layout_height="120dp"
-        android:background="@color/black"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="280dp"
+        android:background="@drawable/icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Title under the banner -->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"

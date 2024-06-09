@@ -1,3 +1,4 @@
+// MainActivity.kt
 package app.ulpn
 
 import android.os.Bundle
@@ -15,17 +16,12 @@ import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
 import app.ulpn.databinding.ActivityMainBinding
 import app.ulpn.ui.Forum
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.Volley
-
 
 class MainActivity : AppCompatActivity() {
-    private val apiSample = "http://10.161.4.102:3000/forum" // TODO: Change to server IP!
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var apiManager: ApiManager
 
     private var forums = arrayListOf<Forum>()
 
@@ -51,8 +47,11 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        // Initialize ApiManager
+        apiManager = ApiManager(this)
+
         // Fetch forums from the API
-        fetchForums { forums ->
+        apiManager.fetchForums { forums ->
             val menu = navView.menu
             forums.forEach { forum ->
                 val menuItem = menu.add(R.id.nav_home, forum.id, Menu.NONE, forum.title)
@@ -72,28 +71,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun fetchForums(callback: (List<Forum>) -> Unit) {
-        val reqQueue: RequestQueue = Volley.newRequestQueue(this)
-        val request = JsonArrayRequest(Request.Method.GET, apiSample, null, { result ->
-            val forums = arrayListOf<Forum>()
-            for (i in 0 until result.length()) {
-                val jsonObj = result.getJSONObject(i)
-                val forum = Forum(
-                    jsonObj.getInt("id"),
-                    jsonObj.getString("title"),
-                    jsonObj.getString("description")
-                )
-                forums.add(forum)
-            }
-            Log.d("ULPN API", forums.toString())
-            callback(forums)
-        }, { err ->
-            Log.e("ULPN API", err.message.toString())
-        })
-
-        reqQueue.add(request)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
