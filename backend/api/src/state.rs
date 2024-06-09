@@ -9,7 +9,6 @@ use anyhow::Result;
 #[derive(Clone)]
 pub struct App {
     db_pool: Pool<AsyncPgConnection>,
-
     config: Config,
 }
 
@@ -25,7 +24,7 @@ impl App {
         Ok(self.db_pool.get().await?)
     }
 
-    pub fn config(&self) -> &Config {
+    pub const fn config(&self) -> &Config {
         &self.config
     }
 }
