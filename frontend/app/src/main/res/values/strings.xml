@@ -17,4 +17,11 @@
     <string name="logout">logout</string>
     <string name="login_with_google">login with gmail</string>
     <string name="google_sign_in_failed">Failed to sign in</string>
+    <string name="home_info_title">Hvorfor gør vi dette her?</string>
+    <string name="home_info_desc">- Sikre Børn og unges sikkerhed online.\n
+                                - Give børn og unge en platform, hvor de kan italesætte hvad de oplever online.\n
+                                - Give forældrer mulighed for at spare med andrer forældrer omkring deres erfaringer.\n
+                                - Anonymitet til en vis grænse (se brugerpolikiken).\n
+                                - En platform der belyser muligheder og risiciene online.
+                            </string>
 </resources>
