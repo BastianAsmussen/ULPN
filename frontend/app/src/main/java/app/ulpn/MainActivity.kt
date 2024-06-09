@@ -4,6 +4,7 @@ package app.ulpn
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             val menu = navView.menu
             forums.forEach { forum ->
                 val menuItem = menu.add(R.id.forum_group, forum.id, Menu.NONE, forum.title)
-                menuItem.setIcon(if (forum.is_locked) R.drawable.chat else R.drawable.forum)
+                menuItem.setIcon(if (forum.is_locked) R.drawable.forum else R.drawable.chat)
                 menuItem.setOnMenuItemClickListener {
                     val bundle = bundleOf("forumId" to forum.id, "forumTitle" to forum.title, "description" to forum.description)
 
