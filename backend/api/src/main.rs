@@ -1,11 +1,10 @@
-use actix_web::{App, HttpServer, web::Data};
+use actix_web::{web::Data, App, HttpServer};
 
 use state::App as AppState;
 
 mod db;
 mod routes;
 mod state;
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();

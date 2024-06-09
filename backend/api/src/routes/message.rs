@@ -1,7 +1,7 @@
-use crate::db::models::message::{Message, NewMessage};
 use actix_web::web::{Data, Json};
 use actix_web::{post, HttpResponse, Responder};
 
+use crate::db::models::message::NewMessage;
 use crate::routes::APIError;
 use crate::state::App;
 

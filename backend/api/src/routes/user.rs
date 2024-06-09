@@ -1,14 +1,24 @@
-use crate::db::models::user::{AccessLevel, NewUser, User};
-use crate::routes::APIError;
-use crate::state::App;
+use std::future::{ready, Ready};
+
 use actix_web::cookie::time::Duration;
 use actix_web::cookie::Cookie;
-use actix_web::web::{Data, Json, ServiceConfig};
+use actix_web::web::{Data, Json};
+use actix_web::{
+    dev::Payload,
+    error::{Error as ActixWebError, ErrorUnauthorized},
+    http, FromRequest, HttpRequest,
+};
 use actix_web::{get, post, web, HttpResponse, Responder};
 use chrono::Utc;
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use reqwest::{Client, Url};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
+
+use crate::db::models::user::{AccessLevel, NewUser, User};
+use crate::routes::APIError;
+use crate::state::App;
 
 #[derive(Deserialize)]
 pub struct OAuthResponse {
@@ -115,9 +125,8 @@ async fn google_oauth_handler(
     let state = &query.state;
 
     if code.is_empty() {
-        return Ok(HttpResponse::Unauthorized().json(
-            json!({"status": "fail", "message": "Authorization code not provided!"}),
-        ));
+        return Ok(HttpResponse::Unauthorized()
+            .json(json!({"status": "fail", "message": "Authorization code not provided!"})));
     }
 
     let Ok(token_response) = request_token(code.as_str(), &data).await else {
@@ -263,16 +272,6 @@ async fn get_google_user(access_token: &str, id_token: &str) -> Result<GoogleUse
         Err(APIError::InternalServerError)
     }
 }
-
-use std::future::{ready, Ready};
-
-use actix_web::{
-    dev::Payload,
-    error::{Error as ActixWebError, ErrorUnauthorized},
-    http, FromRequest, HttpRequest,
-};
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
-use serde_json::json;
 
 pub struct AuthenticationGuard {
     pub user_id: String,

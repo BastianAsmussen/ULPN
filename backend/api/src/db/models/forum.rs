@@ -16,9 +16,9 @@ pub struct Forum {
 
     pub title: String,
     pub description: String,
-    
+
     pub is_locked: bool,
-    
+
     pub access_level: AccessLevel,
 }
 
@@ -109,8 +109,12 @@ impl Forum {
 
         Ok(results)
     }
-    
-    pub async fn by_is_locked(conn: &mut AsyncPgConnection, value: bool, limit: i64) -> Result<Vec<Self>> {
+
+    pub async fn by_is_locked(
+        conn: &mut AsyncPgConnection,
+        value: bool,
+        limit: i64,
+    ) -> Result<Vec<Self>> {
         use crate::db::schema::forums::dsl::{forums, is_locked};
 
         let results = forums
@@ -152,7 +156,7 @@ impl Forum {
 pub struct NewForum {
     pub title: String,
     pub description: String,
-    
+
     pub is_locked: bool,
 
     pub access_level: AccessLevel,
@@ -180,7 +184,6 @@ impl NewForum {
                 description.eq(&self.description),
                 is_locked.eq(&self.is_locked),
                 access_level.eq(&self.access_level),
-                
             ))
             .returning(Forum::as_select())
             .get_result(conn)
