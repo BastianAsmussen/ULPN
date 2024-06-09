@@ -24,9 +24,4 @@
         tools:layout="@layout/fragment_forum_chat">
     </fragment>
 
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="app.ulpn.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
 </navigation>

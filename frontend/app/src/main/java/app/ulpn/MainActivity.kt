@@ -51,29 +51,29 @@ class MainActivity : AppCompatActivity() {
         apiManager = ApiManager(this)
 
         // Fetch forums from the API
+        // Inside fetchForums callback
         apiManager.fetchForums { forums ->
             val menu = navView.menu
             forums.forEach { forum ->
-                val menuItem = menu.add(R.id.nav_home, forum.id, Menu.NONE, forum.title)
+                val menuItem = menu.add(R.id.forum_group, forum.id, Menu.NONE, forum.title)
+                menuItem.setIcon(if (forum.is_locked) R.drawable.chat else R.drawable.forum)
                 menuItem.setOnMenuItemClickListener {
                     val bundle = bundleOf("forumId" to forum.id, "forumTitle" to forum.title, "description" to forum.description)
 
-                    // Dynamically choose the destination based on the is_locked value
                     val destinationId = if (forum.is_locked) R.id.nav_dynamic_Read else R.id.nav_dynamic_Write
 
-                    // Dynamically update the label for the chosen destination
                     val navInflater = navController.navInflater
                     val navGraph = navInflater.inflate(R.navigation.mobile_navigation)
                     navGraph.findNode(destinationId)?.label = forum.title
                     navController.graph = navGraph
 
-                    // Navigate to the chosen destination
                     navController.navigate(destinationId, bundle)
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
             }
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
