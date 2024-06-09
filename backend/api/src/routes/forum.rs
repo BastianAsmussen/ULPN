@@ -2,6 +2,7 @@ use crate::db::models::forum::{Forum, NewForum};
 use actix_web::web::{Data, Json, Path, Query};
 use actix_web::{delete, get, post, HttpResponse, Responder};
 use serde::Deserialize;
+use crate::db::models::user::AccessLevel;
 
 use crate::routes::APIError;
 use crate::state::App;
@@ -27,17 +28,23 @@ pub async fn create_forum(
 #[derive(Deserialize)]
 pub struct Info {
     pub limit: Option<i64>,
+    pub access_level: Option<AccessLevel>,
+    pub is_locked: Option<bool>,
 }
 
 #[get("/forum")]
 pub async fn get_forums(app: Data<App>, info: Query<Info>) -> Result<impl Responder, APIError> {
+    let info = info.into_inner();
+    
     let limit = info.limit.unwrap_or(10);
+    let access_level = info.access_level.unwrap_or(AccessLevel::Child);
+    let is_locked = info.is_locked.unwrap_or(true);
 
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-    let forums = Forum::all(&mut conn, limit)
+    let forums = Forum::all(&mut conn, limit, access_level, is_locked)
         .await
         .map_err(|_| APIError::InternalServerError)?;
 
