@@ -56,16 +56,19 @@ class MainActivity : AppCompatActivity() {
             forums.forEach { forum ->
                 val menuItem = menu.add(R.id.nav_home, forum.id, Menu.NONE, forum.title)
                 menuItem.setOnMenuItemClickListener {
-
                     val bundle = bundleOf("forumId" to forum.id, "forumTitle" to forum.title, "description" to forum.description)
 
-                    // Dynamically update the label for nav_dynamic
+                    // Dynamically choose the destination based on the is_locked value
+                    val destinationId = if (forum.is_locked) R.id.nav_dynamic_Read else R.id.nav_dynamic_Write
+
+                    // Dynamically update the label for the chosen destination
                     val navInflater = navController.navInflater
                     val navGraph = navInflater.inflate(R.navigation.mobile_navigation)
-                    navGraph.findNode(R.id.nav_dynamic)?.label = forum.title
+                    navGraph.findNode(destinationId)?.label = forum.title
                     navController.graph = navGraph
 
-                    navController.navigate(R.id.nav_dynamic, bundle)
+                    // Navigate to the chosen destination
+                    navController.navigate(destinationId, bundle)
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }

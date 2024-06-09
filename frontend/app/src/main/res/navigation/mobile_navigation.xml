@@ -11,10 +11,17 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_dynamic"
+        android:id="@+id/nav_dynamic_Read"
         android:name="app.ulpn.ui.forum.ForumFragment"
         android:label=""
         tools:layout="@layout/fragment_forum">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_dynamic_Write"
+        android:name="app.ulpn.ui.forum_chat.ForumChatFragment"
+        android:label=""
+        tools:layout="@layout/fragment_forum_chat">
     </fragment>
 
     <fragment
