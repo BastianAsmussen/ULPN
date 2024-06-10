@@ -24,7 +24,6 @@ async fn main() -> std::io::Result<()> {
             .service(routes::forum::update_forum)
             .service(routes::forum::delete_forum)
             .service(routes::message::send_message)
-            .service(routes::message::get_messages)
             .service(routes::message::get_message)
             .service(routes::message::update_message)
             .service(routes::message::delete_message)
