@@ -1,6 +1,6 @@
 use crate::db::models::forum::{Forum, NewForum};
 use actix_web::web::{Data, Json, Path, Query};
-use actix_web::{delete, get, post, HttpResponse, Responder};
+use actix_web::{delete, get, post, HttpResponse, Responder, put};
 use serde::Deserialize;
 use crate::db::models::user::AccessLevel;
 
@@ -80,7 +80,7 @@ pub async fn get_forum(app: Data<App>, forum_id: Path<i32>, authentication_guard
     Ok(HttpResponse::Ok().json(forum))
 }
 
-#[post("/forum/{forum_id}")]
+#[put("/forum/{forum_id}")]
 pub async fn update_forum(
     app: Data<App>,
     forum_id: Path<i32>,

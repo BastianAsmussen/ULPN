@@ -1,5 +1,5 @@
 use actix_web::web::{Data, Json, Path, Query};
-use actix_web::{post, HttpResponse, Responder, get, delete};
+use actix_web::{post, HttpResponse, Responder, get, delete, put};
 use serde::Deserialize;
 use crate::db::models::forum::Forum;
 
@@ -59,7 +59,7 @@ pub async fn get_message(app: Data<App>, message_id: Path<i64>, authentication_g
     Ok(HttpResponse::Ok().json(message))
 }
 
-#[post("/message/{message_id}")]
+#[put("/message/{message_id}")]
 pub async fn update_message(
     app: Data<App>,
     message_id: Path<i64>,
