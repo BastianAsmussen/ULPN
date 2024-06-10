@@ -12,6 +12,8 @@ pub enum APIError {
     InternalServerError,
     #[error("Bad Request")]
     BadRequest,
+    #[error("Unauthorized")]
+    Unauthorized,
 }
 
 impl ResponseError for APIError {
@@ -19,6 +21,7 @@ impl ResponseError for APIError {
         match *self {
             Self::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             Self::BadRequest => StatusCode::BAD_REQUEST,
+            Self::Unauthorized => StatusCode::UNAUTHORIZED,
         }
     }
 

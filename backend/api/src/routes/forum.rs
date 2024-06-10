@@ -5,17 +5,24 @@ use serde::Deserialize;
 use crate::db::models::user::AccessLevel;
 
 use crate::routes::APIError;
+use crate::routes::user::AuthenticationGuard;
 use crate::state::App;
 
 #[post("/forum")]
 pub async fn create_forum(
     app: Data<App>,
     forum: Json<NewForum>,
+    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
+    
+    if !authentication_guard.has_access(&mut conn, &AccessLevel::Administrator).await {
+        return Err(APIError::Unauthorized);
+    }
+    
     let forum = forum
         .into_inner()
         .insert(&mut conn)
@@ -33,7 +40,7 @@ pub struct Info {
 }
 
 #[get("/forum")]
-pub async fn get_forums(app: Data<App>, info: Query<Info>) -> Result<impl Responder, APIError> {
+pub async fn get_forums(app: Data<App>, info: Query<Info>, authentication_guard: AuthenticationGuard) -> Result<impl Responder, APIError> {
     let info = info.into_inner();
     
     let limit = info.limit.unwrap_or(10);
@@ -44,6 +51,11 @@ pub async fn get_forums(app: Data<App>, info: Query<Info>) -> Result<impl Respon
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
+    
+    if !authentication_guard.has_access(&mut conn, &access_level).await {
+        return Err(APIError::Unauthorized);
+    }
+    
     let forums = Forum::all(&mut conn, limit, access_level, is_locked)
         .await
         .map_err(|_| APIError::InternalServerError)?;
@@ -52,7 +64,7 @@ pub async fn get_forums(app: Data<App>, info: Query<Info>) -> Result<impl Respon
 }
 
 #[get("/forum/{forum_id}")]
-pub async fn get_forum(app: Data<App>, forum_id: Path<i32>) -> Result<impl Responder, APIError> {
+pub async fn get_forum(app: Data<App>, forum_id: Path<i32>, authentication_guard: AuthenticationGuard) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
@@ -60,6 +72,10 @@ pub async fn get_forum(app: Data<App>, forum_id: Path<i32>) -> Result<impl Respo
     let forum = Forum::by_id(&mut conn, forum_id.into_inner())
         .await
         .map_err(|_| APIError::InternalServerError)?;
+    
+    if !authentication_guard.has_access(&mut conn, &forum.access_level).await {
+        return Err(APIError::Unauthorized);
+    }
 
     Ok(HttpResponse::Ok().json(forum))
 }
@@ -69,11 +85,16 @@ pub async fn update_forum(
     app: Data<App>,
     forum_id: Path<i32>,
     forum: Json<NewForum>,
+    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
+    if !authentication_guard.has_access(&mut conn, &AccessLevel::Administrator).await {
+        return Err(APIError::Unauthorized);
+    }
+    
     let forum = forum
         .into_inner()
         .update(&mut conn, forum_id.into_inner())
@@ -84,11 +105,15 @@ pub async fn update_forum(
 }
 
 #[delete("/forum/{forum_id}")]
-pub async fn delete_forum(app: Data<App>, forum_id: Path<i32>) -> Result<impl Responder, APIError> {
+pub async fn delete_forum(app: Data<App>, forum_id: Path<i32>, authentication_guard: AuthenticationGuard) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
+    if !authentication_guard.has_access(&mut conn, &AccessLevel::Administrator).await {
+        return Err(APIError::Unauthorized);
+    }
+    
     Forum::delete(&mut conn, forum_id.into_inner())
         .await
         .map_err(|_| APIError::InternalServerError)?;

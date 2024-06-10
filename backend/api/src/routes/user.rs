@@ -10,6 +10,7 @@ use actix_web::{
 };
 use actix_web::{get, post, web, HttpResponse, Responder};
 use chrono::Utc;
+use diesel_async::AsyncPgConnection;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use reqwest::{Client, Url};
@@ -275,6 +276,17 @@ async fn get_google_user(access_token: &str, id_token: &str) -> Result<GoogleUse
 
 pub struct AuthenticationGuard {
     pub user_id: String,
+}
+
+impl AuthenticationGuard {
+    pub async fn has_access(&self, conn: &mut AsyncPgConnection, required_level: &AccessLevel) -> bool {
+        let user = User::by_id(conn, self.user_id.parse().unwrap())
+            .await
+            .map_err(|_| APIError::InternalServerError)
+            .unwrap();
+
+        user.access_level >= *required_level
+    }
 }
 
 impl FromRequest for AuthenticationGuard {
