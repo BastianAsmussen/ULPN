@@ -1,8 +1,8 @@
-use crate::db::models::forum::Forum;
-use actix_web::web::{Data, Json, Path, Query};
+use actix_web::web::{Data, Json, Path};
 use actix_web::{delete, get, post, put, HttpResponse, Responder};
 use serde::Deserialize;
 
+use crate::db::models::forum::Forum;
 use crate::db::models::message::{Message, NewMessage};
 use crate::db::models::user::AccessLevel;
 use crate::routes::user::AuthenticationGuard;
