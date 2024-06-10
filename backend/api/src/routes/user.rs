@@ -279,7 +279,11 @@ pub struct AuthenticationGuard {
 }
 
 impl AuthenticationGuard {
-    pub async fn has_access(&self, conn: &mut AsyncPgConnection, required_level: &AccessLevel) -> bool {
+    pub async fn has_access(
+        &self,
+        conn: &mut AsyncPgConnection,
+        required_level: &AccessLevel,
+    ) -> bool {
         let user = User::by_id(conn, self.user_id.parse().unwrap())
             .await
             .map_err(|_| APIError::InternalServerError)

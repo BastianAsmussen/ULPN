@@ -127,7 +127,12 @@ impl Forum {
         Ok(results)
     }
 
-    pub async fn all(conn: &mut AsyncPgConnection, limit: i64, access_level_: AccessLevel, is_locked_: bool) -> Result<Vec<Self>> {
+    pub async fn all(
+        conn: &mut AsyncPgConnection,
+        limit: i64,
+        access_level_: AccessLevel,
+        is_locked_: bool,
+    ) -> Result<Vec<Self>> {
         use crate::db::schema::forums::dsl::forums;
 
         let results = forums
@@ -140,7 +145,7 @@ impl Forum {
 
         Ok(results)
     }
-    
+
     pub async fn update(
         conn: &mut AsyncPgConnection,
         id: i32,
@@ -164,7 +169,7 @@ impl Forum {
 
         Ok(result)
     }
-    
+
     pub async fn delete(conn: &mut AsyncPgConnection, id: i32) -> Result<()> {
         use crate::db::schema::forums::dsl::forums;
 

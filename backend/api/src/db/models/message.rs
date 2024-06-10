@@ -151,8 +151,12 @@ impl Message {
 
         Ok(results)
     }
-    
-    pub async fn update(self, conn: &mut AsyncPgConnection, new_message: NewMessage) -> Result<Message> {
+
+    pub async fn update(
+        self,
+        conn: &mut AsyncPgConnection,
+        new_message: NewMessage,
+    ) -> Result<Message> {
         use crate::db::schema::messages::dsl::messages;
 
         let result = diesel::update(messages.find(self.id))
@@ -173,7 +177,7 @@ impl Message {
 
         Ok(result)
     }
-    
+
     pub async fn delete(self, conn: &mut AsyncPgConnection) -> Result<()> {
         use crate::db::schema::messages::dsl::messages;
 
