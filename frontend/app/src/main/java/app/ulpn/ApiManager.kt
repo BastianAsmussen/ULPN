@@ -9,9 +9,10 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import app.ulpn.ui.Forum
 import app.ulpn.ui.User
-import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.reflect.Method
 
 data class ApiManager(private val context: Context?) {
     private val serverIp = "http://172.17.0.1:3000" // TODO: Change to server IP!
@@ -42,29 +43,30 @@ data class ApiManager(private val context: Context?) {
         reqQueue.add(request)
     }
 
-    fun sendUserInfoToApi(user: User, callback: (String) -> Unit) {
+    fun sendUserInfoToApi(user: User, callback: (String?) -> Unit) {
         val reqQueue: RequestQueue = Volley.newRequestQueue(context)
         val apiUrl = "$serverIp/sessions/oauth/google"
 
-        val request = object : StringRequest(
-            Request.Method.GET, apiUrl,
-            { response: String ->
-                // Log the received JWT
-                Log.d("ULPN API", "Received JWT: $response")
-                // Call the callback function with the JWT
-                callback(response)
+        val requestBody = JSONObject()
+        requestBody.put("redirect_uri", "")
+        requestBody.put("client_id", "")
+
+        val scopes = JSONArray()
+        scopes.put("https://www.googleapis.com/auth/userinfo.profile")
+        scopes.put("https://www.googleapis.com/auth/userinfo.email")
+        requestBody.put("scope", scopes)
+
+        val request = JsonObjectRequest(
+            Request.Method.POST, apiUrl, requestBody,
+            { response: JSONObject ->
+                val token = response.optString("token")
+                callback(token)
             },
             { error ->
-                Log.e("ULPN API", error.message.toString())
+                Log.e("ULPN API", error.message ?: "Unknown error")
+                callback(null)
             }
-        ) {
-            override fun getHeaders(): Map<String, String> {
-                val headers = HashMap<String, String>()
-                headers["Authorization"] = "Bearer ${user.getEmail()}"
-                return headers
-            }
-        }
-
+        )
         reqQueue.add(request)
     }
 
