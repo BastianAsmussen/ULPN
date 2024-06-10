@@ -45,6 +45,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    settings (key) {
+        #[max_length = 255]
+        key -> Varchar,
+        #[max_length = 1024]
+        value -> Varchar,
+    }
+}
+
+diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::AccessLevel;
 
@@ -68,5 +77,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     forums,
     identities,
     messages,
+    settings,
     users,
 );
