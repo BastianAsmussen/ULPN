@@ -140,7 +140,31 @@ impl Forum {
 
         Ok(results)
     }
+    
+    pub async fn update(
+        conn: &mut AsyncPgConnection,
+        id: i32,
+        title_: &str,
+        description_: &str,
+        is_locked_: bool,
+        access_level_: AccessLevel,
+    ) -> Result<Self> {
+        use crate::db::schema::forums::dsl::forums;
 
+        let result = diesel::update(forums.find(id))
+            .set((
+                title.eq(title_),
+                description.eq(description_),
+                is_locked.eq(is_locked_),
+                access_level.eq(access_level_),
+            ))
+            .returning(Self::as_select())
+            .get_result(conn)
+            .await?;
+
+        Ok(result)
+    }
+    
     pub async fn delete(conn: &mut AsyncPgConnection, id: i32) -> Result<()> {
         use crate::db::schema::forums::dsl::forums;
 
