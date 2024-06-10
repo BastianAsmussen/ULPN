@@ -36,6 +36,7 @@ pub async fn create_forum(
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Info {
     pub limit: Option<i64>,
     pub access_level: Option<AccessLevel>,
