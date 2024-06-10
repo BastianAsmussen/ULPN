@@ -10,6 +10,7 @@ use crate::routes::APIError;
 use crate::state::App;
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Info {
     pub limit: Option<i64>,
 }
