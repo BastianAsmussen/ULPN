@@ -113,11 +113,7 @@ class HomeFragment : Fragment() {
                     Log.d(TAG, "JWT fetched: $jwt")
                     // You can now use the JWT to fetch forums or any other protected resources
 
-                    // For example, you can use the JWT to make another request
-                    ApiManager(context).fetchForumsJwt(jwt) { forums ->
-                        Log.d(TAG, "Forums fetched: $forums")
-                        (requireActivity() as MainActivity).addForumNavViews(forums) // Add them to the user's view
-                    }
+                    //TODO: Fetch Forums
                 }
 
                 // Update button state
