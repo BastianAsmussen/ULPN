@@ -26,6 +26,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private lateinit var markwon: Markwon
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private val apiManager = ApiManager(requireContext())
     private val RC_SIGN_IN = 123 // Request code for Google Sign-In
 
     // This property is only valid between onCreateView and onDestroyView.
@@ -103,16 +104,20 @@ class HomeFragment : Fragment() {
                 // Google Sign-In was successful
                 val account = task.getResult(ApiException::class.java)
                 Log.d(TAG, "signInWithGoogle:" + account.id)
-                val user = User.getInstance(account.displayName.toString(),account.email.toString())
+                val user = User.getInstance(account.displayName.toString(), account.email.toString())
                 user.setAccessLevel(1)
-                // Hash the user information
-                val hashedUser = user.hashUser()
-                Log.d(TAG, "User logged in: ${hashedUser}")
+                Log.d(TAG, "User logged in: ${user}")
 
-                // Call the API to fetch forums with the hashed user
-                ApiManager(context).fetchForumsHash(hashedUser) { forums ->
-                    Log.d(TAG, "Forums fetched: $forums")
-                    (requireActivity() as MainActivity).addForumNavViews(forums) // Add them to the users view
+                // Call the API to fetch JWT with the user's information
+                apiManager.sendUserInfoToApi(user) { jwt ->
+                    Log.d(TAG, "JWT fetched: $jwt")
+                    // You can now use the JWT to fetch forums or any other protected resources
+
+                    // For example, you can use the JWT to make another request
+                    ApiManager(context).fetchForumsJwt(jwt) { forums ->
+                        Log.d(TAG, "Forums fetched: $forums")
+                        (requireActivity() as MainActivity).addForumNavViews(forums) // Add them to the user's view
+                    }
                 }
 
                 // Update button state
@@ -130,6 +135,9 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
+
+
     companion object {
         private const val TAG = "HomeFragment"
     }
