@@ -27,6 +27,11 @@ async fn main() -> std::io::Result<()> {
             .service(routes::message::get_message)
             .service(routes::message::update_message)
             .service(routes::message::delete_message)
+            .service(routes::settings::get_settings)
+            .service(routes::settings::get_setting)
+            .service(routes::settings::create_setting)
+            .service(routes::settings::update_setting)
+            .service(routes::settings::delete_setting)
     })
     .bind(("0.0.0.0", 3000))?
     .run()
