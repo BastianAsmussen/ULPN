@@ -16,10 +16,12 @@ INSERT INTO forums (
     description,
     access_level
 ) VALUES (
-    'Grroming',
-    '''# Hvad er grooming?
+    'Grooming',
+    '''
+    # Hvad er grooming?
 
-    Brødtekst er længere, løbende tekst. Før i tiden blev typografernes løn beregnet ud fra antallet af linjer de havde sat. Brødteksten var hurtig at sætte og det var hovedsageligt det som gav sætteren penge til det daglige brød. Brødtekst kaldes også brødsats eller brødskrift.''',
+    Brødtekst er længere, løbende tekst. Før i tiden blev typografernes løn beregnet ud fra antallet af linjer de havde sat. Brødteksten var hurtig at sætte og det var hovedsageligt det som gav sætteren penge til det daglige brød. Brødtekst kaldes også brødsats eller brødskrift.
+    ''',
     'child'
 );
 
@@ -31,12 +33,14 @@ INSERT INTO forums (
 ) VALUES (
     1,
     'Virkelige Sager',
-    '''# Virkelige Sager
+    '''
+    # Virkelige Sager
     Her er der et par virkelige sager.
 
     - [Første](http://example.com/case-1)
     - [Anden](http://example.com/case-2)
-    - [Tredje](http://example.com/case-3)''',
+    - [Tredje](http://example.com/case-3)
+    ''',
     'child'
 );
 
@@ -48,12 +52,14 @@ INSERT INTO forums (
 ) VALUES (
     1,
     'Podcasts',
-    '''# Podcasts
+    '''
+    # Podcasts
     Her er der et par podcasts.
 
     - [Første](http://example.com/podcast-1)
     - [Anden](http://example.com/podcast-2)
-    - [Tredje](http://example.com/podcast-3)''',
+    - [Tredje](http://example.com/podcast-3)
+    ''',
     'child'
 );
 
@@ -76,9 +82,11 @@ INSERT INTO forums (
     access_level
 ) VALUES (
     'Online Gaming',
-    '''# Hvad er Online Gaming
+    '''
+    # Hvad er Online Gaming
 
-    Brødtekst er længere, løbende tekst. Før i tiden blev typografernes løn beregnet ud fra antallet af linjer de havde sat. Brødteksten var hurtig at sætte og det var hovedsageligt det som gav sætteren penge til det daglige brød. Brødtekst kaldes også brødsats eller brødskrift.''',
+    Brødtekst er længere, løbende tekst. Før i tiden blev typografernes løn beregnet ud fra antallet af linjer de havde sat. Brødteksten var hurtig at sætte og det var hovedsageligt det som gav sætteren penge til det daglige brød. Brødtekst kaldes også brødsats eller brødskrift.
+    ''',
     'child'
 );
 
