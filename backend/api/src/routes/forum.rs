@@ -1,10 +1,9 @@
-use crate::db::models::forum::{Forum, NewForum};
-use crate::db::models::user::AccessLevel;
+use actix_web::{delete, get, HttpResponse, post, put, Responder};
 use actix_web::web::{Data, Json, Path, Query};
-use actix_web::{delete, get, post, put, HttpResponse, Responder};
 use serde::Deserialize;
 
-use crate::routes::user::AuthenticationGuard;
+use crate::db::models::forum::{Forum, NewForum};
+use crate::db::models::user::AccessLevel;
 use crate::routes::APIError;
 use crate::state::App;
 
@@ -12,20 +11,12 @@ use crate::state::App;
 pub async fn create_forum(
     app: Data<App>,
     forum: Json<NewForum>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-
-    if !authentication_guard
-        .has_access(&mut conn, &AccessLevel::Administrator)
-        .await
-    {
-        return Err(APIError::Unauthorized);
-    }
-
+    
     let forum = forum
         .into_inner()
         .insert(&mut conn)
@@ -47,7 +38,6 @@ pub struct Info {
 pub async fn get_forums(
     app: Data<App>,
     info: Query<Info>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let info = info.into_inner();
 
@@ -59,14 +49,6 @@ pub async fn get_forums(
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-
-    if !authentication_guard
-        .has_access(&mut conn, &access_level)
-        .await
-    {
-        return Err(APIError::Unauthorized);
-    }
-
     let forums = Forum::all(&mut conn, limit, access_level, is_locked)
         .await
         .map_err(|_| APIError::InternalServerError)?;
@@ -78,7 +60,6 @@ pub async fn get_forums(
 pub async fn get_forum(
     app: Data<App>,
     forum_id: Path<i32>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
@@ -88,13 +69,6 @@ pub async fn get_forum(
         .await
         .map_err(|_| APIError::InternalServerError)?;
 
-    if !authentication_guard
-        .has_access(&mut conn, &forum.access_level)
-        .await
-    {
-        return Err(APIError::Unauthorized);
-    }
-
     Ok(HttpResponse::Ok().json(forum))
 }
 
@@ -103,18 +77,11 @@ pub async fn update_forum(
     app: Data<App>,
     forum_id: Path<i32>,
     forum: Json<NewForum>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-    if !authentication_guard
-        .has_access(&mut conn, &AccessLevel::Administrator)
-        .await
-    {
-        return Err(APIError::Unauthorized);
-    }
 
     let forum = forum
         .into_inner()
@@ -129,18 +96,11 @@ pub async fn update_forum(
 pub async fn delete_forum(
     app: Data<App>,
     forum_id: Path<i32>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-    if !authentication_guard
-        .has_access(&mut conn, &AccessLevel::Administrator)
-        .await
-    {
-        return Err(APIError::Unauthorized);
-    }
 
     Forum::delete(&mut conn, forum_id.into_inner())
         .await

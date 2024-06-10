@@ -1,11 +1,8 @@
+use actix_web::{delete, get, HttpResponse, post, put, Responder};
 use actix_web::web::{Data, Json, Path};
-use actix_web::{delete, get, post, put, HttpResponse, Responder};
 use serde::Deserialize;
 
-use crate::db::models::forum::Forum;
 use crate::db::models::message::{Message, NewMessage};
-use crate::db::models::user::AccessLevel;
-use crate::routes::user::AuthenticationGuard;
 use crate::routes::APIError;
 use crate::state::App;
 
@@ -19,22 +16,11 @@ pub struct Info {
 pub async fn send_message(
     app: Data<App>,
     message: Json<NewMessage>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-
-    let forum = Forum::by_id(&mut conn, message.forum_id)
-        .await
-        .map_err(|_| APIError::InternalServerError)?;
-    if !authentication_guard
-        .has_access(&mut conn, &forum.access_level)
-        .await
-    {
-        return Err(APIError::Unauthorized);
-    }
 
     let message = message
         .into_inner()
@@ -49,7 +35,6 @@ pub async fn send_message(
 pub async fn get_message(
     app: Data<App>,
     message_id: Path<i64>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
@@ -58,16 +43,6 @@ pub async fn get_message(
     let message = Message::by_id(&mut conn, message_id.into_inner())
         .await
         .map_err(|_| APIError::InternalServerError)?;
-
-    let forum = Forum::by_id(&mut conn, message.forum_id)
-        .await
-        .map_err(|_| APIError::InternalServerError)?;
-    if !authentication_guard
-        .has_access(&mut conn, &forum.access_level)
-        .await
-    {
-        return Err(APIError::Unauthorized);
-    }
 
     Ok(HttpResponse::Ok().json(message))
 }
@@ -77,7 +52,6 @@ pub async fn update_message(
     app: Data<App>,
     message_id: Path<i64>,
     new_message: Json<NewMessage>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
@@ -87,25 +61,6 @@ pub async fn update_message(
     let message = Message::by_id(&mut conn, message_id.into_inner())
         .await
         .map_err(|_| APIError::InternalServerError)?;
-
-    let forum = Forum::by_id(&mut conn, message.forum_id)
-        .await
-        .map_err(|_| APIError::InternalServerError)?;
-    if !authentication_guard
-        .has_access(&mut conn, &forum.access_level)
-        .await
-    {
-        return Err(APIError::Unauthorized);
-    }
-
-    if message.sender_id
-        != authentication_guard
-            .user_id
-            .parse::<i32>()
-            .map_err(|_| APIError::Unauthorized)?
-    {
-        return Err(APIError::Unauthorized);
-    }
 
     let new_message = new_message.into_inner();
     let message = message
@@ -120,7 +75,6 @@ pub async fn update_message(
 pub async fn delete_message(
     app: Data<App>,
     message_id: Path<i64>,
-    authentication_guard: AuthenticationGuard,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
@@ -130,20 +84,7 @@ pub async fn delete_message(
     let message = Message::by_id(&mut conn, message_id.into_inner())
         .await
         .map_err(|_| APIError::InternalServerError)?;
-
-    let is_admin = authentication_guard
-        .has_access(&mut conn, &AccessLevel::Administrator)
-        .await;
-    if is_admin
-        || message.sender_id
-            != authentication_guard
-                .user_id
-                .parse::<i32>()
-                .map_err(|_| APIError::Unauthorized)?
-    {
-        return Err(APIError::Unauthorized);
-    }
-
+    
     message
         .delete(&mut conn)
         .await
