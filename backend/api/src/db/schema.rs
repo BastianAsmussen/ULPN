@@ -12,6 +12,7 @@ diesel::table! {
 
     forums (id) {
         id -> Int4,
+        owner_id -> Nullable<Int4>,
         #[max_length = 128]
         title -> Varchar,
         description -> Text,
@@ -63,4 +64,9 @@ diesel::joinable!(messages -> forums (forum_id));
 diesel::joinable!(messages -> identities (identity_id));
 diesel::joinable!(messages -> users (sender_id));
 
-diesel::allow_tables_to_appear_in_same_query!(forums, identities, messages, users,);
+diesel::allow_tables_to_appear_in_same_query!(
+    forums,
+    identities,
+    messages,
+    users,
+);
