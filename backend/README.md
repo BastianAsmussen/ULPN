@@ -20,3 +20,7 @@ You can use the [.env.example](.env) file as a template.
 ## Secrets
 
 Create a file at `secrets/db/password.txt` containing the password for the database.
+
+## API
+
+See usage instructions in the [API documentation](api/ROUTES.md).
