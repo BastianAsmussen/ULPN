@@ -9,7 +9,7 @@ import com.android.volley.toolbox.Volley
 import app.ulpn.ui.Forum
 
 data class ApiManager(private val context: Context?) {
-    private val serverIp = "http://172.17.0.1:3000" // TODO: Change to server IP!
+    private val serverIp = "http://51.68.175.190:3000"
 
     fun fetchForums(callback: (List<Forum>) -> Unit) {
         val reqQueue: RequestQueue = Volley.newRequestQueue(context)
