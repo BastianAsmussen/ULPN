@@ -33,11 +33,4 @@ class User private constructor(private val username: String, private val email: 
         return accessLevel
     }
 
-    fun hashUser(): String {
-        val userData = "$username$email$accessLevel"
-        val bytes = userData.toByteArray()
-        val md = MessageDigest.getInstance("SHA-256")
-        val digest = md.digest(bytes)
-        return digest.fold("", { str, it -> str + "%02x".format(it) })
-    }
 }
