@@ -151,6 +151,36 @@ impl Message {
 
         Ok(results)
     }
+    
+    pub async fn update(self, conn: &mut AsyncPgConnection, new_message: NewMessage) -> Result<Message> {
+        use crate::db::schema::messages::dsl::messages;
+
+        let result = diesel::update(messages.find(self.id))
+            .set((
+                crate::db::schema::messages::dsl::forum_id.eq(new_message.forum_id),
+                crate::db::schema::messages::dsl::sender_id.eq(new_message.sender_id),
+                if let Some(reply_id) = new_message.reply_id {
+                    crate::db::schema::messages::dsl::reply_id.eq(reply_id)
+                } else {
+                    crate::db::schema::messages::dsl::reply_id.eq(self.reply_id)
+                },
+                crate::db::schema::messages::dsl::identity_id.eq(new_message.identity_id),
+                crate::db::schema::messages::dsl::contents.eq(new_message.contents),
+                crate::db::schema::messages::dsl::is_published.eq(new_message.is_published),
+            ))
+            .get_result(conn)
+            .await?;
+
+        Ok(result)
+    }
+    
+    pub async fn delete(self, conn: &mut AsyncPgConnection) -> Result<()> {
+        use crate::db::schema::messages::dsl::messages;
+
+        diesel::delete(messages.find(self.id)).execute(conn).await?;
+
+        Ok(())
+    }
 }
 
 #[derive(Debug, Insertable, Deserialize)]
