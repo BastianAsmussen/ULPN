@@ -15,11 +15,14 @@ Create a `.env` file with the following:
 | `GOOGLE_OAUTH_SECRET`       | Google OAuth secret.       |
 | `GOOGLE_OAUTH_REDIRECT_URL` | Google OAuth redirect URL. |
 
-You can use the [.env.example](.env) file as a template.
+You can use the [.env.example](.env.example) file as a template.
 
 ## Secrets
 
 Create a file at `secrets/db/password.txt` containing the password for the database.
+```sh
+echo "password" > secrets/db/password.txt
+```
 
 ## API
 
