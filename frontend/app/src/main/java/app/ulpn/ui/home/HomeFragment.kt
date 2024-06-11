@@ -24,6 +24,7 @@ import io.noties.markwon.Markwon
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
+    private lateinit var viewModel: HomeViewModel // Declare viewModel
     private lateinit var markwon: Markwon
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 123 // Request code for Google Sign-In
@@ -36,16 +37,15 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this)[HomeViewModel::class.java]
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        val rootView = binding.root
 
-        val textView = binding.description
-        markwon = Markwon.create(requireContext())
-        homeViewModel.text.observe(viewLifecycleOwner) { markdownText ->
-            markwon.setMarkdown(textView, markdownText)
+        // ViewModel initialization
+        viewModel = ViewModelProvider(this, HomeViewModelFactory(ApiManager(requireContext())))[HomeViewModel::class.java]
+
+        // Observe changes to title and update UI
+        viewModel.title.observe(viewLifecycleOwner) { title ->
+            binding.title.text = title
         }
 
         // Initialize Google Sign-In options
@@ -60,9 +60,13 @@ class HomeFragment : Fragment() {
         val signInButton = binding.loginWithGoogleButton
         updateButtonState(signInButton)
 
-        return root
+        return rootView
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     override fun onDestroy() {
         super.onDestroy()
         signOut()

@@ -2,11 +2,12 @@ package app.ulpn
 
 import android.content.Context
 import android.util.Log
+import app.ulpn.ui.Forum
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import app.ulpn.ui.Forum
 
 data class ApiManager(private val context: Context?) {
     private val serverIp = "http://51.68.175.190:3000"
@@ -37,5 +38,22 @@ data class ApiManager(private val context: Context?) {
         reqQueue.add(request)
     }
 
+    fun fetchSettings(callback: (Map<String, String>) -> Unit) {
+        val reqQueue: RequestQueue = Volley.newRequestQueue(context)
+        val apiUrl = "$serverIp/settings"
+        val request = JsonObjectRequest(Request.Method.GET, apiUrl, null, { result ->
+            val settings = mutableMapOf<String, String>()
+            val keys = result.keys()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                settings[key] = result.getString(key)
+            }
+            Log.d("ULPN API", settings.toString())
+            callback(settings)
+        }, { err ->
+            Log.e("ULPN API", err.message.toString())
+        })
 
+        reqQueue.add(request)
+    }
 }

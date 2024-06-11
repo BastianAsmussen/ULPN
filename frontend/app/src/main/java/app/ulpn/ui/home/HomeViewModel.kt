@@ -3,21 +3,19 @@ package app.ulpn.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import app.ulpn.ApiManager
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(private val apiManager: ApiManager) : ViewModel() {
+    private val _title = MutableLiveData<String>()
+    val title: LiveData<String> = _title
 
-    private val _text = MutableLiveData<String>()
-    val text: LiveData<String> = _text
     init {
-        val markdownText = """
-            Hjælp dit barn eller dine børn med at beskytte sig på de forskellige apps og medier, 
-            så de bliver bedst udrustettil den digitale verden. Hvorpå den svære samtale gøres nemmere, 
-            når man skal italesætte problematikker derkan opstå når man begår sig online.
+        // Initially set a placeholder value
+        _title.value = "Loading..."
 
-            
-  
-        """.trimIndent()
-
-        _text.value = markdownText
+        // Fetch data from API and update title
+        apiManager.fetchSettings { settings ->
+            _title.postValue(settings["home_title"])
+        }
     }
 }
