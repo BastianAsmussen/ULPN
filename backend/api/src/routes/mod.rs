@@ -6,6 +6,7 @@ pub mod forum;
 pub mod message;
 pub mod user;
 pub mod settings;
+pub mod download;
 
 #[derive(Debug, Error)]
 pub enum APIError {
