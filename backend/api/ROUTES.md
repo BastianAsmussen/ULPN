@@ -18,3 +18,9 @@
 | /message/:id           | GET    | Gets a message by ID.                  |
 | /message/:id           | PUT    | Updates a message by ID.               |
 | /message/:id           | DELETE | Deletes a message by ID.               |
+| /settings              | GET    | Gets all active app settings.          |
+| /settings/:key         | GET    | Gets a specific setting by its key.    |
+| /settings              | POST   | Create a new app setting.              |
+| /settings/:key         | PUT    | Overwrite/update an app setting.       |
+| /settings/:key         | DELETE | Delete an app setting by its key       |
+
