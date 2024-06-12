@@ -5,7 +5,6 @@ import android.util.Log
 import app.ulpn.ui.Forum
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
@@ -13,15 +12,22 @@ import org.json.JSONObject
 data class ApiManager(private val context: Context?) {
     private val serverIp = "http://51.68.175.190:3000"
 
-    fun fetchForums(callback: (List<Forum>) -> Unit) {
+    fun fetchForumsApi(callback: (List<Forum>) -> Unit) {
         val activity = context as MainActivity
-        val requestBody = JSONObject()
-        requestBody.put("credentials", activity.userData)
+        val credentials = activity.getCredentials()
+
+        val requestBody = JSONObject().apply {
+            put("userId", credentials.getString("userId"))
+            put("accessToken", credentials.getString("accessToken"))
+        }
+
+        Log.d("ApiManager", "Request Body: $requestBody")
 
         val reqQueue: RequestQueue = Volley.newRequestQueue(context)
         val apiUrl = "$serverIp/forum"
-        val request = JsonArrayRequest(Request.Method.GET, apiUrl, null, { result ->
+        val request = JsonObjectRequest(Request.Method.POST, apiUrl, requestBody, { response ->
             val forums = arrayListOf<Forum>()
+            val result = response.getJSONArray("forums")
             for (i in 0 until result.length()) {
                 val jsonObj = result.getJSONObject(i)
                 val owner = if (jsonObj.has("owner")) jsonObj.getInt("owner") else 0
@@ -32,6 +38,7 @@ data class ApiManager(private val context: Context?) {
                     jsonObj.getBoolean("is_locked"),
                     owner
                 )
+                Log.d("Added Forum: ", forum.title)
                 forums.add(forum)
             }
             Log.d("ULPN API", forums.toString())
@@ -39,6 +46,7 @@ data class ApiManager(private val context: Context?) {
         }, { err ->
             Log.e("ULPN API", err.message.toString())
         })
+
 
         reqQueue.add(request)
     }

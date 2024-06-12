@@ -94,6 +94,8 @@ class HomeFragment : Fragment() {
                     json.put("accessToken", credentials.accessToken)
 
                     activity.userData = json
+
+                    activity.fetchForums(activity.apiManager)
                 }
             })
     }

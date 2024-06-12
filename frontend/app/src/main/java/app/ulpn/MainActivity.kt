@@ -2,6 +2,7 @@
 package app.ulpn
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private lateinit var apiManager: ApiManager
+    lateinit var apiManager: ApiManager
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
@@ -61,7 +62,11 @@ class MainActivity : AppCompatActivity() {
         apiManager = ApiManager(this)
 
         // Fetch forums from the API
-        apiManager.fetchForums { forums ->
+        fetchForums(apiManager)
+    }
+
+    fun fetchForums(apiManager: ApiManager) {
+        apiManager.fetchForumsApi { forums ->
             runOnUiThread {
                 addForumNavViews(forums)
             }
@@ -135,6 +140,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getCredentials(): JSONObject {
-        return userData!!
+        return userData ?: JSONObject().apply {
+            put("userId", "dummyUserId")
+            put("accessToken", "dummyAccessToken")
+        }
     }
 }

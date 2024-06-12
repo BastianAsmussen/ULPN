@@ -2,6 +2,7 @@ package app.ulpn.ui
 
 import java.security.MessageDigest
 
+// Define User class with getInstance, getUsername, getEmail methods
 class User private constructor(private val username: String, private val email: String, private var accessLevel: Int = 0) {
 
     companion object {
@@ -15,12 +16,6 @@ class User private constructor(private val username: String, private val email: 
         }
     }
 
-    // Custom setter for accessLevel
-    fun setAccessLevel(level: Int) {
-        accessLevel = level
-    }
-
-    // Getter methods for properties
     fun getUsername(): String {
         return username
     }
@@ -32,5 +27,4 @@ class User private constructor(private val username: String, private val email: 
     fun getAccessLevel(): Int {
         return accessLevel
     }
-
 }
