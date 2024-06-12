@@ -1,7 +1,7 @@
 ARG RUST_VERSION=1.78.0
 ARG APP_NAME=api
 
-FROM rust:${RUST_VERSION}-slim-buster AS build
+FROM rust:${RUST_VERSION}-slim-bullseye AS build
 ARG APP_NAME
 WORKDIR /app
 
@@ -31,12 +31,13 @@ RUN --mount=type=bind,source=${APP_NAME}/src,target=src \
 cargo build --locked --release && \
 cp ./target/release/$APP_NAME /bin/server
 
-FROM debian:buster-slim AS final
+FROM debian:bullseye-slim AS final
 
 # Install the required system dependencies.
 RUN apt-get update && \
     apt-get install -y \
     libpq-dev \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 ARG UID=10001
