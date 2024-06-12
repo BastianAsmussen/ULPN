@@ -33,7 +33,6 @@ pub async fn has_access(config: &Config, user_id: &str, expected_level: &AccessL
         .await?
         .json::<Vec<Role>>()
         .await?;
-
     for role in roles {
         let access_level: AccessLevel = role.into();
         if access_level >= *expected_level {
