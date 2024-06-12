@@ -9,7 +9,7 @@ class User private constructor(private val username: String, private val email: 
 
         fun getInstance(username: String, email: String): User {
             if (instance == null) {
-                instance = User(username, email) // Default access level
+                instance = User(username, email)
             }
             return instance!!
         }
