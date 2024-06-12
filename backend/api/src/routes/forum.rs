@@ -63,12 +63,15 @@ pub async fn get_forums(
     let mut forums = Forum::all(&mut conn, limit, access_level, is_locked)
         .await
         .map_err(|_| APIError::InternalServerError)?;
-    tracing::info!("connected to db!");
+    tracing::info!("fetched all forums!");
 
     let mut filtered_forums = Vec::new();
     for forum in &forums {
         let has_access = match credentials.0 {
-            Some(ref credentials) => has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|_| APIError::InternalServerError)?,
+            Some(ref credentials) => has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|e| {
+                tracing::error!("Error occurred during access check! {e}");
+                APIError::InternalServerError
+            })?,
             None => forum.access_level == AccessLevel::Child,
         };
         tracing::info!("filtered forum!");

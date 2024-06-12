@@ -13,19 +13,14 @@ struct Role {
     description: String,
 }
 
-impl TryInto<AccessLevel> for Role {
-    type Error = APIError;
-
-    fn try_into(self) -> Result<AccessLevel, Self::Error> {
-        let access_level = match &*self.name {
+impl Into<AccessLevel> for Role {
+    fn into(self) ->AccessLevel {
+        match &*self.name {
             "administrator" => AccessLevel::Administrator,
-            "professional" => AccessLevel::Administrator,
-            "parent" => AccessLevel::Administrator,
-            "child" => AccessLevel::Administrator,
-            _ => return Err(BadRequest),
-        };
-        
-        Ok(access_level)
+            "professional" => AccessLevel::Professional,
+            "parent" => AccessLevel::Parent,
+            _ => AccessLevel::Child,
+        }
     }
 }
 
@@ -38,12 +33,9 @@ pub async fn has_access(config: &Config, user_id: &str, expected_level: &AccessL
         .await?
         .json::<Vec<Role>>()
         .await?;
-    
+
     for role in roles {
-        let Ok(access_level): Result<AccessLevel, _> = role.try_into() else {
-            continue;
-        };
-        
+        let access_level: AccessLevel = role.into();
         if access_level >= *expected_level {
             return Ok(true);
         }
