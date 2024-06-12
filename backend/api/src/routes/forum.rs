@@ -52,14 +52,18 @@ pub async fn get_forums(
     let limit = info.limit.unwrap_or(10);
     let access_level = info.access_level.unwrap_or(AccessLevel::Child);
     let is_locked = info.is_locked.unwrap_or(true);
+    tracing::info!("fetched info!");
 
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
+    tracing::info!("connected to db!");
+
     let mut forums = Forum::all(&mut conn, limit, access_level, is_locked)
         .await
         .map_err(|_| APIError::InternalServerError)?;
+    tracing::info!("connected to db!");
 
     let mut filtered_forums = Vec::new();
     for forum in &forums {
@@ -67,6 +71,8 @@ pub async fn get_forums(
             Some(ref credentials) => has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|_| APIError::InternalServerError)?,
             None => forum.access_level == AccessLevel::Child,
         };
+        tracing::info!("filtered forum!");
+
         if !has_access {
             continue
         }
