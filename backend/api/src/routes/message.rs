@@ -1,9 +1,13 @@
 use actix_web::{delete, get, HttpResponse, post, put, Responder};
 use actix_web::web::{Data, Json, Path};
 use serde::Deserialize;
+use crate::db::models::forum::Forum;
 
 use crate::db::models::message::{Message, NewMessage};
+use crate::db::models::user::AccessLevel;
 use crate::routes::APIError;
+use crate::routes::APIError::InternalServerError;
+use crate::routes::user::{Credentials, has_access};
 use crate::state::App;
 
 #[derive(Deserialize)]
@@ -16,12 +20,19 @@ pub struct Info {
 pub async fn send_message(
     app: Data<App>,
     message: Json<NewMessage>,
+    credentials: Json<Credentials>,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-
+    
+    let forum = Forum::by_id(&mut conn, message.forum_id).await.map_err(|_| InternalServerError)?;
+    let has_access = has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|_| APIError::InternalServerError)?;
+    if !has_access {
+        return Err(APIError::Unauthorized);
+    }
+    
     let message = message
         .into_inner()
         .insert(&mut conn)
@@ -35,6 +46,7 @@ pub async fn send_message(
 pub async fn get_message(
     app: Data<App>,
     message_id: Path<i64>,
+    credentials: Json<Credentials>,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()
@@ -44,6 +56,12 @@ pub async fn get_message(
         .await
         .map_err(|_| APIError::InternalServerError)?;
 
+    let forum = Forum::by_id(&mut conn, message.forum_id).await.map_err(|_| InternalServerError)?;
+    let has_access = has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|_| APIError::InternalServerError)?;
+    if !has_access {
+        return Err(APIError::Unauthorized);
+    }
+
     Ok(HttpResponse::Ok().json(message))
 }
 
@@ -52,6 +70,7 @@ pub async fn update_message(
     app: Data<App>,
     message_id: Path<i64>,
     new_message: Json<NewMessage>,
+    credentials: Json<Credentials>,
 ) -> Result<impl Responder, APIError> {
     let mut conn = app
         .establish_connection()

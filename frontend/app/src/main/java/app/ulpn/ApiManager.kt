@@ -8,11 +8,16 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import org.json.JSONObject
 
 data class ApiManager(private val context: Context?) {
     private val serverIp = "http://51.68.175.190:3000"
 
     fun fetchForums(callback: (List<Forum>) -> Unit) {
+        val activity = context as MainActivity
+        val requestBody = JSONObject()
+        requestBody.put("credentials", activity.userData)
+
         val reqQueue: RequestQueue = Volley.newRequestQueue(context)
         val apiUrl = "$serverIp/forum"
         val request = JsonArrayRequest(Request.Method.GET, apiUrl, null, { result ->

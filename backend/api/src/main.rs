@@ -5,6 +5,7 @@ use state::App as AppState;
 mod db;
 mod routes;
 mod state;
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();
@@ -14,10 +15,6 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(state.clone()))
-            .service(routes::user::google_oauth_handler)
-            .service(routes::user::login_user_handler)
-            .service(routes::user::register_user_handler)
-            .service(routes::user::logout_handler)
             .service(routes::forum::create_forum)
             .service(routes::forum::get_forums)
             .service(routes::forum::get_forum)

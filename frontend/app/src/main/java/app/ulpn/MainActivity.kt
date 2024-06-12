@@ -3,19 +3,21 @@ package app.ulpn
 
 import android.os.Bundle
 import android.view.Menu
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
-import androidx.core.view.GravityCompat
-import androidx.navigation.NavController
 import app.ulpn.databinding.ActivityMainBinding
 import app.ulpn.ui.Forum
+import com.auth0.android.Auth0
+import com.google.android.material.navigation.NavigationView
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,8 +29,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navView: NavigationView
     private val addedForumMenuIds = mutableListOf<Int>()
 
+    lateinit var account: Auth0
+
+    var userData: JSONObject? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        account = Auth0("8KKHPtb3Q4PFQRHuJJezbjqsHlkGp3JA", "asmussen.eu.auth0.com")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -58,7 +66,6 @@ class MainActivity : AppCompatActivity() {
                 addForumNavViews(forums)
             }
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -125,5 +132,9 @@ class MainActivity : AppCompatActivity() {
             menu.removeItem(menuId)
         }
         addedForumMenuIds.clear()
+    }
+
+    fun getCredentials(): JSONObject {
+        return userData!!
     }
 }

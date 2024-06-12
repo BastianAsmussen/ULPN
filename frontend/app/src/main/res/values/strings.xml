@@ -21,4 +21,5 @@
                                 - Anonymitet til en vis grænse (se brugerpolikiken).\n
                                 - En platform der belyser muligheder og risiciene online.
                             </string>
+    <string name="com_auth0_domain">asmussen.eu.auth0.com</string>
 </resources>

@@ -1,6 +1,5 @@
 package app.ulpn.ui.home
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,13 +12,16 @@ import app.ulpn.ApiManager
 import app.ulpn.MainActivity
 import app.ulpn.R
 import app.ulpn.databinding.FragmentHomeBinding
-import app.ulpn.ui.User
+import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.callback.Callback
+import com.auth0.android.provider.WebAuthProvider
+import com.auth0.android.result.Credentials
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.google.android.material.button.MaterialButton
 import io.noties.markwon.Markwon
+import org.json.JSONObject
 
 class HomeFragment : Fragment() {
 
@@ -27,7 +29,6 @@ class HomeFragment : Fragment() {
     private lateinit var viewModel: HomeViewModel // Declare viewModel
     private lateinit var markwon: Markwon
     private lateinit var mGoogleSignInClient: GoogleSignInClient
-    private val RC_SIGN_IN = 123 // Request code for Google Sign-In
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -74,21 +75,51 @@ class HomeFragment : Fragment() {
 
     // Google Sign-In method
     private fun signIn() {
-        val signInIntent = mGoogleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        val activity = requireActivity() as MainActivity
+        val account = activity.account
+
+        WebAuthProvider.login(account)
+            .withScheme("demo")
+            .withScope("openid profile email")
+            .start(requireActivity(), object : Callback<Credentials, AuthenticationException> {
+                override fun onFailure(exception: AuthenticationException) {
+                    Log.e(TAG, "Failed to log in!", exception)
+
+                    Toast.makeText(requireContext(), "Failed to log in!", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onSuccess(credentials: Credentials) {
+                    val json = JSONObject()
+                    json.put("userId", credentials.user.getId())
+                    json.put("accessToken", credentials.accessToken)
+
+                    activity.userData = json
+                }
+            })
     }
 
     // Google Sign-Out method
     private fun signOut() {
-        mGoogleSignInClient.signOut().addOnCompleteListener(requireActivity()) {
-            updateButtonState(binding.loginWithGoogleButton)
-        }
+        val activity = requireActivity() as MainActivity
+        val account = activity.account
+
+        WebAuthProvider.logout(account)
+            .withScheme("demo")
+            .start(requireActivity(), object: Callback<Void?, AuthenticationException> {
+                override fun onFailure(error: AuthenticationException) {
+                    Log.e(TAG, "Failed to log out!", error)
+                }
+
+                override fun onSuccess(payload: Void?) {
+                    activity.userData = null
+                }
+            })
     }
 
     // Update button state based on sign-in status
-    fun updateButtonState(button: MaterialButton) {
-        val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
-        if (account != null) {
+    private fun updateButtonState(button: MaterialButton) {
+        val activity = requireActivity() as MainActivity
+        if (activity.userData != null) {
             button.text = getString(R.string.logout)
             button.setOnClickListener { signOut() }
         } else {
@@ -97,40 +128,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    // Handle Google Sign-In result
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                // Google Sign-In was successful
-                val account = task.getResult(ApiException::class.java)
-                Log.d(TAG, "signInWithGoogle:" + account.id)
-                val user = User.getInstance(account.displayName.toString(),account.email.toString())
-                user.setAccessLevel(1)
-
-                // Call the API to fetch forums with the hashed user
-                ApiManager(context).fetchForums { forums ->
-                    Log.d(TAG, "Forums fetched: $forums")
-                    (requireActivity() as MainActivity).addForumNavViews(forums) // Add them to the users view
-                }
-
-                // Update button state
-                updateButtonState(binding.loginWithGoogleButton)
-
-            } catch (e: ApiException) {
-                // Google Sign-In failed
-                Log.w(TAG, "Google sign in failed", e)
-                // Display error message to user
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.google_sign_in_failed),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
     companion object {
         private const val TAG = "HomeFragment"
     }
