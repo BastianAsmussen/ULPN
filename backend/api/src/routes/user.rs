@@ -1,5 +1,4 @@
-use reqwest::Client;
-use reqwest::header::AUTHORIZATION;
+use reqwest::{Client, header, header::AUTHORIZATION};
 use serde::Deserialize;
 
 use crate::db::models::user::AccessLevel;
@@ -34,7 +33,7 @@ pub async fn has_access(config: &Config, user_id: &str, expected_level: &AccessL
     let client = Client::new();
     let roles = client
         .get(format!("https://{}/api/v2/users/{user_id}/roles", config.auth0_domain))
-        .header(AUTHORIZATION, &config.mgmt_api_access_token)
+        .header(header::AUTHORIZATION, &format!("Bearer {}", &config.mgmt_api_access_token))
         .send()
         .await?
         .json::<Vec<Role>>()
