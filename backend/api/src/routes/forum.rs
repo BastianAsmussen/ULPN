@@ -18,7 +18,7 @@ pub async fn create_forum(
     if !has_access {
         return Err(APIError::Unauthorized);
     }
-    
+
     let mut conn = app
         .establish_connection()
         .await
@@ -60,15 +60,20 @@ pub async fn get_forums(
     let mut forums = Forum::all(&mut conn, limit, access_level, is_locked)
         .await
         .map_err(|_| APIError::InternalServerError)?;
-    
-    forums.retain(async move |f| {
-        let Some(credentials) = credentials else {
-            return f.access_level == AccessLevel::Child;
+
+    let mut filtered_forums = Vec::new();
+    for forum in &forums {
+        let has_access = match credentials.0 {
+            Some(ref credentials) => has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|_| APIError::InternalServerError)?,
+            None => forum.access_level == AccessLevel::Child,
         };
-        
-        has_access(app.config(), &credentials.user_id, &f.access_level).await.map_err(|_| APIError::InternalServerError)?
-    });
-    
+        if !has_access {
+            continue
+        }
+
+        filtered_forums.push(forum);
+    }
+
     Ok(HttpResponse::Ok().json(forums))
 }
 
@@ -85,7 +90,7 @@ pub async fn get_forum(
     let forum = Forum::by_id(&mut conn, forum_id.into_inner())
         .await
         .map_err(|_| APIError::InternalServerError)?;
-    
+
     let has_access = has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|_| APIError::InternalServerError)?;
     if !has_access {
         return Err(APIError::Unauthorized);
@@ -105,12 +110,12 @@ pub async fn update_forum(
     if !has_access {
         return Err(APIError::Unauthorized);
     }
-    
+
     let mut conn = app
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-    
+
     let forum = forum
         .into_inner()
         .update(&mut conn, forum_id.into_inner())
@@ -130,7 +135,7 @@ pub async fn delete_forum(
     if !has_access {
         return Err(APIError::Unauthorized);
     }
-    
+
     let mut conn = app
         .establish_connection()
         .await
