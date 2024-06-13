@@ -3,14 +3,14 @@ package app.ulpn
 import android.content.Context
 import android.util.Log
 import app.ulpn.ui.Forum
+import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONException
 import org.json.JSONObject
-import java.nio.charset.Charset
+
 
 data class ApiManager(private val context: Context?) {
     private val serverIp = "http://51.68.175.190:3000"
@@ -23,14 +23,13 @@ data class ApiManager(private val context: Context?) {
         val apiUrl = "$serverIp/forum"
 
 
-        val request = object : StringRequest(
+        val request = object : JsonObjectRequest(
             Method.GET,
             apiUrl,
+            credentials,
             { response ->
                 try {
-                    // Parse the JSON manually
-                    val jsonResponse = JSONObject(response)
-                    val forumsArray = jsonResponse.getJSONArray("forums")
+                    val forumsArray = response.getJSONArray("forums")
                     val forums = mutableListOf<Forum>()
 
                     for (i in 0 until forumsArray.length()) {
@@ -66,7 +65,6 @@ data class ApiManager(private val context: Context?) {
         }
 
         reqQueue.add(request)
-
     }
 
 
