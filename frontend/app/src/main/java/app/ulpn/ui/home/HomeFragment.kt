@@ -90,7 +90,7 @@ class HomeFragment : Fragment() {
 
                 override fun onSuccess(credentials: Credentials) {
                     val json = JSONObject()
-                    json.put("userId", credentials.user.getId())
+                    json.put("userId", credentials.user.getId().toString())
                     json.put("accessToken", credentials.accessToken)
 
                     activity.userData = json
