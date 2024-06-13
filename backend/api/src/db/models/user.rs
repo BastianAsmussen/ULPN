@@ -8,7 +8,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 #[derive(
-    Debug, diesel_derive_enum::DbEnum, Serialize, Deserialize, Clone, PartialEq, PartialOrd,
+    Debug, diesel_derive_enum::DbEnum, Serialize, Deserialize, Clone, Eq, PartialEq, PartialOrd,
 )]
 #[ExistingTypePath = "crate::db::schema::sql_types::AccessLevel"]
 pub enum AccessLevel {

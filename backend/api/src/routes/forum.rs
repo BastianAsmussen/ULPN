@@ -23,7 +23,7 @@ pub async fn create_forum(
         .establish_connection()
         .await
         .map_err(|_| APIError::InternalServerError)?;
-    
+
     let forum = forum
         .into_inner()
         .insert(&mut conn)
@@ -45,7 +45,7 @@ pub struct Info {
 pub async fn get_forums(
     app: Data<App>,
     info: Query<Info>,
-    credentials: Json<Option<Credentials>>,
+    credentials: Json<Credentials>,
 ) -> Result<impl Responder, APIError> {
     let info = info.into_inner();
 
@@ -64,14 +64,7 @@ pub async fn get_forums(
 
     let mut filtered_forums = Vec::new();
     for forum in &forums {
-        let has_access = match credentials.0 {
-            Some(ref credentials) => has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|e| {
-                tracing::error!("Error occurred during access check! {e}");
-                APIError::InternalServerError
-            })?,
-            None => forum.access_level == AccessLevel::Child,
-        };
-
+        let has_access = has_access(app.config(), &credentials.user_id, &forum.access_level).await.map_err(|_| APIError::InternalServerError)?;
         if !has_access {
             continue
         }

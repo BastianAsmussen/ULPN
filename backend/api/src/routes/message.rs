@@ -4,7 +4,6 @@ use serde::Deserialize;
 use crate::db::models::forum::Forum;
 
 use crate::db::models::message::{Message, NewMessage};
-use crate::db::models::user::AccessLevel;
 use crate::routes::APIError;
 use crate::routes::APIError::InternalServerError;
 use crate::routes::user::{Credentials, has_access};

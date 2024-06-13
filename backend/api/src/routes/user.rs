@@ -1,9 +1,7 @@
-use reqwest::{Client, header, header::AUTHORIZATION};
+use reqwest::{Client, header};
 use serde::Deserialize;
 
 use crate::db::models::user::AccessLevel;
-use crate::routes::APIError;
-use crate::routes::APIError::BadRequest;
 use crate::state::Config;
 
 #[derive(Deserialize)]

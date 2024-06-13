@@ -156,7 +156,7 @@ impl Message {
         self,
         conn: &mut AsyncPgConnection,
         new_message: NewMessage,
-    ) -> Result<Message> {
+    ) -> Result<Self> {
         use crate::db::schema::messages::dsl::messages;
 
         let result = diesel::update(messages.find(self.id))
