@@ -9,7 +9,6 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONException
-import org.json.JSONObject
 
 
 data class ApiManager(private val context: Context?) {
@@ -21,13 +20,10 @@ data class ApiManager(private val context: Context?) {
         val credentials = activity.getCredentials()
         val apiUrl = "$serverIp/forum"
 
-        // Log the credentials for debugging
-        Log.d("DEBUG", "Request credentials: $credentials")
-
         val request = object : JsonObjectRequest(
             Request.Method.GET,
             apiUrl,
-            credentials,
+            null,
             Response.Listener { response ->
                 Log.d("SUCCESS", "LESS GOOO")
                 try {
@@ -63,9 +59,10 @@ data class ApiManager(private val context: Context?) {
                 }
             }
         ) {
-            override fun getHeaders(): Map<String, String> {
-                val headers = HashMap<String, String>()
-                headers["Content-Type"] = "application/json"
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = mutableMapOf<String, String>()
+                headers["Authorization"] = "${credentials["userId"]}"
+                
                 return headers
             }
         }
