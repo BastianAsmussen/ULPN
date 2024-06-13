@@ -3,9 +3,9 @@ package app.ulpn
 import android.content.Context
 import android.util.Log
 import app.ulpn.ui.Forum
-import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.RequestQueue
+import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONException
@@ -14,20 +14,22 @@ import org.json.JSONObject
 
 data class ApiManager(private val context: Context?) {
     private val serverIp = "http://51.68.175.190:3000"
+    var reqQueue: RequestQueue = Volley.newRequestQueue(context)
 
     fun fetchForumsApi(callback: (List<Forum>) -> Unit) {
         val activity = context as MainActivity
         val credentials = activity.getCredentials()
-
-        val reqQueue: RequestQueue = Volley.newRequestQueue(context)
         val apiUrl = "$serverIp/forum"
 
+        // Log the credentials for debugging
+        Log.d("DEBUG", "Request credentials: $credentials")
 
         val request = object : JsonObjectRequest(
-            Method.GET,
+            Request.Method.GET,
             apiUrl,
             credentials,
-            { response ->
+            Response.Listener { response ->
+                Log.d("SUCCESS", "LESS GOOO")
                 try {
                     val forumsArray = response.getJSONArray("forums")
                     val forums = mutableListOf<Forum>()
@@ -51,7 +53,7 @@ data class ApiManager(private val context: Context?) {
                     Log.e("ULPN API", "Error parsing JSON: ${e.message}")
                 }
             },
-            { error ->
+            Response.ErrorListener { error ->
                 Log.e("ULPN API", "Error: ${error.message}")
                 error.networkResponse?.let { response ->
                     Log.e("ULPN API", "Error Response Code: ${response.statusCode}")
@@ -61,17 +63,20 @@ data class ApiManager(private val context: Context?) {
                 }
             }
         ) {
-
+            override fun getHeaders(): Map<String, String> {
+                val headers = HashMap<String, String>()
+                headers["Content-Type"] = "application/json"
+                return headers
+            }
         }
-
         reqQueue.add(request)
     }
 
 
 
 
+
     fun fetchSettings(callback: (Map<String, String>) -> Unit) {
-        val reqQueue: RequestQueue = Volley.newRequestQueue(context)
         val apiUrl = "$serverIp/settings"
         val request = JsonObjectRequest(Request.Method.GET, apiUrl, null, { result ->
             val settings = mutableMapOf<String, String>()
@@ -82,7 +87,8 @@ data class ApiManager(private val context: Context?) {
             }
             Log.d("ULPN API", settings.toString())
             callback(settings)
-        }, { err ->
+        },
+            { err ->
             Log.e("ULPN API", "Error: ${err.message}")
             err.networkResponse?.let { response ->
                 Log.e("ULPN API", "Error Response Code: ${response.statusCode}")
@@ -91,7 +97,6 @@ data class ApiManager(private val context: Context?) {
                 }
             }
         })
-
         reqQueue.add(request)
     }
 }
