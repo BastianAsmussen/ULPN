@@ -4,6 +4,7 @@ package app.ulpn
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat
@@ -16,6 +17,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import app.ulpn.databinding.ActivityMainBinding
 import app.ulpn.ui.Forum
+import app.ulpn.ui.home.HomeViewModel
+import app.ulpn.ui.home.HomeViewModelFactory
 import com.auth0.android.Auth0
 import com.google.android.material.navigation.NavigationView
 import org.json.JSONObject
@@ -33,6 +36,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var account: Auth0
 
     var userData: JSONObject? = null
+
+    // ViewModel initialization
+    private val homeViewModel: HomeViewModel by viewModels {
+        HomeViewModelFactory(ApiManager(this))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +69,17 @@ class MainActivity : AppCompatActivity() {
         // Initialize ApiManager
         apiManager = ApiManager(this)
 
-        // Fetch forums from the API
+        // Fetch forums and settings from the API
+        fetchSettings(apiManager)
         fetchForums(apiManager)
+    }
+
+    fun fetchSettings(apiManager: ApiManager) {
+        apiManager.fetchSettings { settings ->
+            runOnUiThread {
+                homeViewModel.updateSettings(settings)
+            }
+        }
     }
 
     fun fetchForums(apiManager: ApiManager) {
@@ -127,9 +144,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-
-
 
     fun removeForumNavViews() {
         val menu = navView.menu

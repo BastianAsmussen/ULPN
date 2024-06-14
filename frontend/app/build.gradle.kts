@@ -44,8 +44,7 @@ android {
 }
 
 dependencies {
-    implementation("io.jsonwebtoken:jjwt:0.7.0")
-    implementation("com.auth0.android:auth0:2.+")
+    implementation("com.android.volley:volley:1.2.1")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("io.noties.markwon:core:4.6.2")

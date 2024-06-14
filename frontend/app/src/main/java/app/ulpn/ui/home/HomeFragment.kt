@@ -1,3 +1,4 @@
+// HomeFragment.kt
 package app.ulpn.ui.home
 
 import android.os.Bundle
@@ -29,6 +30,7 @@ class HomeFragment : Fragment() {
     private lateinit var viewModel: HomeViewModel // Declare viewModel
     private lateinit var markwon: Markwon
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private lateinit var signInButton: MaterialButton // Declare signInButton
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -58,7 +60,7 @@ class HomeFragment : Fragment() {
         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
         // Set up Google Sign-In Button
-        val signInButton = binding.loginWithGoogleButton
+        signInButton = binding.loginWithGoogleButton // Initialize signInButton
         updateButtonState(signInButton)
 
         return rootView
@@ -68,6 +70,7 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
     override fun onDestroy() {
         super.onDestroy()
         signOut()
@@ -94,7 +97,7 @@ class HomeFragment : Fragment() {
                     json.put("accessToken", credentials.accessToken)
 
                     activity.userData = json
-
+                    updateButtonState(signInButton)
                     activity.fetchForums(activity.apiManager)
                 }
             })
@@ -114,6 +117,7 @@ class HomeFragment : Fragment() {
 
                 override fun onSuccess(payload: Void?) {
                     activity.userData = null
+                    updateButtonState(signInButton)
                 }
             })
     }
