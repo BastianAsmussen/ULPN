@@ -9,7 +9,9 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 
 
 data class ApiManager(private val context: Context?) {
@@ -69,20 +71,15 @@ data class ApiManager(private val context: Context?) {
 
 
 
-    fun fetchSettings(callback: (Map<String, String>) -> Unit) {
+    fun fetchSettings(callback: (JSONArray) -> Unit) {
+        Log.d("Confirmation", "Fetch Settings is being called...")
         val activity = context as MainActivity
         val credentials = activity.getCredentials()
         val apiUrl = "$serverIp/settings"
 
-        val request = object : JsonObjectRequest(Method.GET, apiUrl, null, Response.Listener { result ->
-            val settings = mutableMapOf<String, String>()
-            val keys = result.keys()
-            while (keys.hasNext()) {
-                val key = keys.next()
-                settings[key] = result.getString(key)
-            }
-            Log.d("Settings:", settings.toString())
-            callback(settings)
+        val request = object : JsonArrayRequest(Method.GET, apiUrl, null, Response.Listener { result ->
+            Log.d("Settings:", result.toString())
+            callback(result)
         }, Response.ErrorListener { err ->
             Log.e("ULPN API", "Error: ${err.message}")
             err.networkResponse?.let { response ->
@@ -102,5 +99,7 @@ data class ApiManager(private val context: Context?) {
 
         reqQueue.add(request)
     }
+
+
 
 }

@@ -1,4 +1,3 @@
-// HomeFragment.kt
 package app.ulpn.ui.home
 
 import android.os.Bundle
@@ -27,13 +26,12 @@ import org.json.JSONObject
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-    private lateinit var viewModel: HomeViewModel // Declare viewModel
+    private val binding get() = _binding!!
+
+    private lateinit var viewModel: HomeViewModel
     private lateinit var markwon: Markwon
     private lateinit var mGoogleSignInClient: GoogleSignInClient
-    private lateinit var signInButton: MaterialButton // Declare signInButton
-
-    // This property is only valid between onCreateView and onDestroyView.
-    private val binding get() = _binding!!
+    private lateinit var signInButton: MaterialButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,8 +41,8 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val rootView = binding.root
 
-        // ViewModel initialization
-        viewModel = ViewModelProvider(this, HomeViewModelFactory(ApiManager(requireContext())))[HomeViewModel::class.java]
+        // Initialize ViewModel using ViewModelProvider
+        viewModel = ViewModelProvider(this, HomeViewModelFactory(ApiManager(requireContext()))).get(HomeViewModel::class.java)
 
         // Observe changes to title and update UI
         viewModel.title.observe(viewLifecycleOwner) { title ->
@@ -60,20 +58,21 @@ class HomeFragment : Fragment() {
         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
         // Set up Google Sign-In Button
-        signInButton = binding.loginWithGoogleButton // Initialize signInButton
+        signInButton = binding.loginWithGoogleButton
         updateButtonState(signInButton)
 
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Other components...
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        signOut()
     }
 
     // Google Sign-In method
@@ -87,7 +86,6 @@ class HomeFragment : Fragment() {
             .start(requireActivity(), object : Callback<Credentials, AuthenticationException> {
                 override fun onFailure(exception: AuthenticationException) {
                     Log.e(TAG, "Failed to log in!", exception)
-
                     Toast.makeText(requireContext(), "Failed to log in!", Toast.LENGTH_SHORT).show()
                 }
 
@@ -99,6 +97,7 @@ class HomeFragment : Fragment() {
                     activity.userData = json
                     updateButtonState(signInButton)
                     activity.fetchForums(activity.apiManager)
+                    activity.fetchSettings(activity.apiManager)
                 }
             })
     }
@@ -110,7 +109,7 @@ class HomeFragment : Fragment() {
 
         WebAuthProvider.logout(account)
             .withScheme("demo")
-            .start(requireActivity(), object: Callback<Void?, AuthenticationException> {
+            .start(requireActivity(), object : Callback<Void?, AuthenticationException> {
                 override fun onFailure(error: AuthenticationException) {
                     Log.e(TAG, "Failed to log out!", error)
                 }

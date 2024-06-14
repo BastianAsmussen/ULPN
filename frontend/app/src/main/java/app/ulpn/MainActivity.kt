@@ -75,12 +75,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun fetchSettings(apiManager: ApiManager) {
-        apiManager.fetchSettings { settings ->
+        apiManager.fetchSettings { settingsArray ->
+            val settingsMap = mutableMapOf<String, String>()
+            for (i in 0 until settingsArray.length()) {
+                val settingObject = settingsArray.getJSONObject(i)
+                val key = settingObject.getString("key")
+                val value = settingObject.getString("value")
+                settingsMap[key] = value
+            }
             runOnUiThread {
-                homeViewModel.updateSettings(settings)
+                homeViewModel.updateSettings(settingsMap)
             }
         }
     }
+
+
 
     fun fetchForums(apiManager: ApiManager) {
         apiManager.fetchForumsApi { forums ->

@@ -1,4 +1,3 @@
-// HomeViewModel.kt
 package app.ulpn.ui.home
 
 import android.util.Log
@@ -8,17 +7,23 @@ import androidx.lifecycle.ViewModel
 import app.ulpn.ApiManager
 
 class HomeViewModel(private val apiManager: ApiManager) : ViewModel() {
-    private val _title = MutableLiveData<String>()
-    val title: LiveData<String> = _title
+
+    // Private mutable LiveData for title
+    private val _title = MutableLiveData<String?>()
+
+    // Public immutable LiveData for title
+    val title: MutableLiveData<String?>
+        get() = _title
 
     init {
         // Initially set a placeholder value
         _title.value = "Loading..."
     }
 
-    // Function to update settings
+    // Function to update settings and update _title
     fun updateSettings(settings: Map<String, String>) {
-        Log.d("TEST", "HUH")
-        _title.postValue(settings["home_title"])
+        val newTitle = settings["home_title"]
+        Log.d("HomeViewModel", "Updating title to: $newTitle")
+        _title.value = newTitle.toString()
     }
 }
