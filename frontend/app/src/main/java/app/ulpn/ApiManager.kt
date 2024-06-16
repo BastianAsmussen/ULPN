@@ -114,7 +114,7 @@ data class ApiManager(private val context: Context?) {
         description: String,
         isLocked: Boolean,
         accessLevel: String,
-        ownerId: Int?,
+        ownerId: Int?, // Nullable type
         callback: (Boolean) -> Unit
     ) {
         val activity = context as MainActivity
@@ -143,13 +143,21 @@ data class ApiManager(private val context: Context?) {
                 jsonBody.put("description", description)
                 jsonBody.put("isLocked", isLocked)
                 jsonBody.put("accessLevel", accessLevel)
-                ownerId?.let { jsonBody.put("owner_id", it) }
+                if (ownerId != null) {
+                    jsonBody.put("owner_id", ownerId)
+                } else {
+                    jsonBody.put("owner_id", JSONObject.NULL)
+                }
                 return jsonBody.toString().toByteArray(Charsets.UTF_8)
             }
+
         }
 
         reqQueue.add(request)
     }
+
+
+
 
 
     fun deleteForum(id: Int, callback: (Boolean) -> Unit) {

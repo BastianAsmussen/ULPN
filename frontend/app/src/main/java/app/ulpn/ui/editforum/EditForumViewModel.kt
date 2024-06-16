@@ -1,5 +1,6 @@
 package app.ulpn.ui.editforum
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,6 +41,7 @@ class EditForumViewModel(private val apiManager: ApiManager) : ViewModel() {
     fun addForum(title: String, description: String, isLocked: Boolean, accessLevel: String, ownerId: Int?, callback: (Boolean) -> Unit) {
         apiManager.addForum(title, description, isLocked, accessLevel, ownerId) { success ->
             if (success) {
+                Log.d("step 2", ownerId.toString())
                 // Update the list of forums after addition
                 fetchForums()
             }

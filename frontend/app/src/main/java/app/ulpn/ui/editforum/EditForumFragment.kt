@@ -53,6 +53,7 @@ class EditForumFragment : Fragment() {
             val accessLevel = binding.newForumAccessLevelEditText.text.toString()
             val ownerId = binding.newForumOwnerIdEditText.text.toString().toIntOrNull()
 
+
             // Call ViewModel to add the new forum
             editForumViewModel.addForum(newTitle, newDescription, isLocked, accessLevel, ownerId) { success ->
                 if (success) {
@@ -76,18 +77,29 @@ class EditForumFragment : Fragment() {
         val containerLayout = binding.containerLayout
         containerLayout.removeAllViews()
 
-        forums.forEach { forum ->
+        // Sort forums by id first
+        val sortedForums = forums.sortedBy { it.id }
+
+        // Create a map to group forums by ownerId
+        val forumsByOwnerId = sortedForums.groupBy { it.owner_id }
+
+        // Iterate through sorted forums and add views
+        sortedForums.forEach { forum ->
             val forumView = LayoutInflater.from(requireContext()).inflate(R.layout.item_forum, containerLayout, false)
 
             val titleTextView = forumView.findViewById<TextView>(R.id.titleTextView)
             val titleEditText = forumView.findViewById<EditText>(R.id.titleEditText)
             val descriptionEditText = forumView.findViewById<EditText>(R.id.descriptionEditText)
+            val idTextView = forumView.findViewById<TextView>(R.id.idTextView)
+            val ownerIdTextView = forumView.findViewById<TextView>(R.id.ownerIdTextView)
             val saveButton = forumView.findViewById<Button>(R.id.saveButton)
             val deleteButton = forumView.findViewById<Button>(R.id.deleteButton)
 
             titleTextView.text = forum.title
             titleEditText.setText(forum.title)
             descriptionEditText.setText(forum.description)
+            idTextView.text = forum.id.toString()
+            ownerIdTextView.text = forum.owner_id.toString()
 
             saveButton.setOnClickListener {
                 val newTitle = titleEditText.text.toString()
@@ -117,6 +129,9 @@ class EditForumFragment : Fragment() {
             containerLayout.addView(forumView)
         }
     }
+
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
