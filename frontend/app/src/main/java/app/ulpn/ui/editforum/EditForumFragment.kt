@@ -59,6 +59,7 @@ class EditForumFragment : Fragment() {
             val titleEditText = forumView.findViewById<EditText>(R.id.titleEditText)
             val descriptionEditText = forumView.findViewById<EditText>(R.id.descriptionEditText)
             val saveButton = forumView.findViewById<Button>(R.id.saveButton)
+            val deleteButton = forumView.findViewById<Button>(R.id.deleteButton) // Add delete button
 
             titleTextView.text = forum.title
             titleEditText.setText(forum.title)
@@ -67,7 +68,6 @@ class EditForumFragment : Fragment() {
             saveButton.setOnClickListener {
                 val newTitle = titleEditText.text.toString()
                 val newDescription = descriptionEditText.text.toString()
-
                 val isLocked = forum.is_locked
                 val accessLevel = forum.access_Level
 
@@ -80,9 +80,20 @@ class EditForumFragment : Fragment() {
                 }
             }
 
+            deleteButton.setOnClickListener {
+                editForumViewModel.deleteForum(forum.id) { success ->
+                    if (success) {
+                        Toast.makeText(context, "Forum deleted successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Failed to delete forum", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
             containerLayout.addView(forumView)
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

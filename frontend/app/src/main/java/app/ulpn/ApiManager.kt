@@ -109,6 +109,32 @@ data class ApiManager(private val context: Context?) {
         reqQueue.add(request)
     }
 
+
+    fun deleteForum(id: Int, callback: (Boolean) -> Unit) {
+        val activity = context as MainActivity
+        val credentials = activity.getCredentials()
+        val apiUrl = "$serverIp/forum/$id"
+
+        val request = object : StringRequest(Method.DELETE, apiUrl,
+            Response.Listener { response ->
+                Log.d("Delete Forum Response:", response)
+                callback(true)
+            },
+            Response.ErrorListener { error ->
+                Log.e("ULPN API", "Error: ${error.message}")
+                callback(false)
+            }) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = mutableMapOf<String, String>()
+                headers["Authorization"] = "${credentials["userId"]}"
+                return headers
+            }
+        }
+
+        reqQueue.add(request)
+    }
+
+
     fun fetchSettings(callback: (JSONArray) -> Unit) {
         Log.d("Confirmation", "Fetch Settings is being called...")
         val activity = context as MainActivity

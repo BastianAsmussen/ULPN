@@ -26,4 +26,15 @@ class EditForumViewModel(private val apiManager: ApiManager) : ViewModel() {
             callback(success)
         }
     }
+
+    fun deleteForum(id: Int, callback: (Boolean) -> Unit) {
+        apiManager.deleteForum(id) { success ->
+            if (success) {
+                // Update the list of forums after deletion
+                fetchForums()
+            }
+            callback(success)
+        }
+    }
+
 }
