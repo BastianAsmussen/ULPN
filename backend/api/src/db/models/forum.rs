@@ -4,7 +4,7 @@ use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use serde::{Deserialize, Serialize};
 
 use crate::db::schema::forums;
-use crate::db::schema::forums::{access_level, description, is_locked, title};
+use crate::db::schema::forums::{access_level, description, is_locked, owner_id, title};
 
 use super::user::AccessLevel;
 
@@ -159,6 +159,7 @@ impl Forum {
 
         let result = diesel::update(forums.find(id))
             .set((
+                owner_id.eq(owner_id),
                 title.eq(title_),
                 description.eq(description_),
                 is_locked.eq(is_locked_),
@@ -186,6 +187,8 @@ impl Forum {
 #[serde(rename_all = "camelCase")]
 #[allow(clippy::module_name_repetitions)]
 pub struct NewForum {
+    pub owner_id: Option<i32>,
+    
     pub title: String,
     pub description: String,
 
@@ -212,6 +215,7 @@ impl NewForum {
 
         let result = diesel::update(forums.find(id))
             .set((
+                owner_id.eq(&self.owner_id),
                 title.eq(&self.title),
                 description.eq(&self.description),
                 is_locked.eq(&self.is_locked),
