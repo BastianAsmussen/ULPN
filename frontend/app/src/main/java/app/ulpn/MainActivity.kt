@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity() {
     fun fetchForums(apiManager: ApiManager) {
         apiManager.fetchForumsApi { forums ->
             runOnUiThread {
+                Log.d("Found Forums: ", forums.toString())
                 addForumNavViews(forums)
             }
         }
@@ -111,10 +112,14 @@ class MainActivity : AppCompatActivity() {
     fun addForumNavViews(forums: List<Forum>) {
         val menu = navView.menu
         val forumMap = forums.associateBy { it.id }
-        val ownerToForumMap = forums.filter { it.ownerId != null }.associateBy({ it.ownerId }, { it })
+        val ownerToForumMap = forums.filter { it.owner_id != null }.groupBy({ it.owner_id }, { it })
         val addedForumIds = mutableSetOf<Int>() // Track added forum IDs
 
+        Log.d("MainActivity", "Total forums count: ${forums.size}")
+
         forums.forEach { forum ->
+            Log.d("MainActivity", "Processing forum: ${forum.id}")
+
             if (forum.id !in addedForumIds) {
                 val menuItem = menu.add(R.id.forum_group, forum.id, Menu.NONE, forum.title)
                 menuItem.setIcon(if (forum.is_locked) R.drawable.forum else R.drawable.chat)
@@ -133,19 +138,21 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                Log.d("MainActivity", "Added forum: ${forum.id}")
                 addedForumIds.add(forum.id) // Track added forum IDs
 
                 // If the forum has an owner, find its owner forum and add it directly underneath
-                forum.ownerId?.let { ownerId ->
-                    ownerToForumMap[ownerId]?.let { ownerForum ->
+                forum.owner_id?.let { ownerId ->
+                    ownerToForumMap[ownerId]?.forEach { ownerForum ->
                         if (ownerForum.id !in addedForumIds) {
                             val ownerMenuItem = menu.add(R.id.forum_group, ownerForum.id, Menu.NONE, ownerForum.title)
-                            ownerMenuItem.setIcon(if (ownerForum.is_locked) R.drawable.forum else R.drawable.chat)
+                            // No icon (logo) for owner forums
                             ownerMenuItem.setOnMenuItemClickListener { menuItem ->
                                 // Handle click event for owner forum
                                 // Navigation
                                 true
                             }
+                            Log.d("MainActivity", "Added owner forum: ${ownerForum.id}")
                             addedForumIds.add(ownerForum.id) // Track added owner forum IDs
                         }
                     }

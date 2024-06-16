@@ -32,7 +32,7 @@ data class ApiManager(private val context: Context?) {
 
                     for (i in 0 until response.length()) {
                         val jsonObj = response.getJSONObject(i)
-                        val owner = if (jsonObj.has("ownerId")) jsonObj.getInt("ownerId") else null
+                        val owner = if (jsonObj.has("owner_id")) jsonObj.getIntOrNull("owner_id") else null
                         val forum = Forum(
                             jsonObj.getInt("id"),
                             jsonObj.getString("title"),
@@ -68,6 +68,12 @@ data class ApiManager(private val context: Context?) {
         }
         reqQueue.add(request)
     }
+
+    // Helper function to handle nullability of getInt
+    private fun JSONObject.getIntOrNull(key: String): Int? {
+        return if (has(key) && !isNull(key)) getInt(key) else null
+    }
+
 
     fun saveForum(id: Int, newTitle: String, newDescription: String, isLocked: Boolean, accessLevel: String, callback: (Boolean) -> Unit) {
         val activity = context as MainActivity

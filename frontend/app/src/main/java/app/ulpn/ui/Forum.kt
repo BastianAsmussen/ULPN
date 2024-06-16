@@ -6,5 +6,5 @@ data class Forum(
     val description: String,
     val is_locked: Boolean,
     val access_Level: String,
-    val ownerId: Int?
+    val owner_id: Int?
 )
