@@ -13,6 +13,7 @@ use super::user::AccessLevel;
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Forum {
     pub id: i32,
+    pub owner_id: Option<i32>,
 
     pub title: String,
     pub description: String,
