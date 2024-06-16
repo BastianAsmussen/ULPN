@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -33,6 +34,7 @@ class EditForumFragment : Fragment() {
         _binding = FragmentEditforumBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // Initialize ViewModel and observe forums
         val context = requireContext()
         val apiManager = ApiManager(context)
         val editForumViewModelFactory = EditForumViewModelFactory(apiManager)
@@ -47,29 +49,35 @@ class EditForumFragment : Fragment() {
     }
 
     private fun updateForumsUI(forums: List<Forum>) {
-        val containerLayout = binding.containerLayout // Using view binding
-        containerLayout.removeAllViews() // Clear existing views if any
+        val containerLayout = binding.containerLayout
+        containerLayout.removeAllViews()
 
         forums.forEach { forum ->
-            Log.d(TAG, "Adding forum: $forum")
+            val forumView = LayoutInflater.from(requireContext()).inflate(R.layout.item_forum, containerLayout, false)
 
-            val forumView = LayoutInflater.from(requireContext()).inflate(R.layout.item_forum, null)
             val titleTextView = forumView.findViewById<TextView>(R.id.titleTextView)
             val titleEditText = forumView.findViewById<EditText>(R.id.titleEditText)
             val descriptionEditText = forumView.findViewById<EditText>(R.id.descriptionEditText)
             val saveButton = forumView.findViewById<Button>(R.id.saveButton)
 
             titleTextView.text = forum.title
-            titleTextView.textSize = 20f // Set title text size
-            titleTextView.setTypeface(null, Typeface.BOLD) // Set title text bold
-
             titleEditText.setText(forum.title)
             descriptionEditText.setText(forum.description)
 
             saveButton.setOnClickListener {
-                val newTitle = titleEditText.text.toString() // Retrieve edited title
-                val newDescription = descriptionEditText.text.toString() // Retrieve edited description
-                editForumViewModel.saveForum(forum.id, newTitle, newDescription) // Call ViewModel method to save changes
+                val newTitle = titleEditText.text.toString()
+                val newDescription = descriptionEditText.text.toString()
+
+                val isLocked = forum.is_locked
+                val accessLevel = forum.access_Level
+
+                editForumViewModel.saveForum(forum.id, newTitle, newDescription, isLocked, accessLevel) { success ->
+                    if (success) {
+                        Toast.makeText(context, "Forum saved successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Failed to save forum", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
             containerLayout.addView(forumView)

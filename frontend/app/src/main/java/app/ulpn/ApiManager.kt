@@ -11,6 +11,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 
 data class ApiManager(private val context: Context?) {
     private val serverIp = "http://51.68.175.190:3000"
@@ -68,31 +69,34 @@ data class ApiManager(private val context: Context?) {
         reqQueue.add(request)
     }
 
-    fun saveForum(key: String, newValue: String, callback: (Boolean) -> Unit) {
-        Log.d("Confirmation", "Save Forum is being called...")
+    fun saveForum(id: Int, newTitle: String, newDescription: String, isLocked: Boolean, accessLevel: String, callback: (Boolean) -> Unit) {
         val activity = context as MainActivity
         val credentials = activity.getCredentials()
-        val apiUrl = "$serverIp/forum/$key"
+        val apiUrl = "$serverIp/forum/$id"
 
-        val request = object : StringRequest(Method.PUT, apiUrl, Response.Listener { response ->
-            Log.d("Save Forum Response:", response)
-            callback(true)
-        }, Response.ErrorListener { err ->
-            Log.e("ULPN API", "Error: ${err.message}")
-            err.networkResponse?.let { response ->
-                Log.e("ULPN API", "Error Response Code: ${response.statusCode}")
-                response.data?.let { data ->
-                    Log.e("ULPN API", "Error Data: ${String(data)}")
-                }
-            }
-            callback(false)
-        }) {
+        val request = object : StringRequest(Method.PUT, apiUrl,
+            Response.Listener { response ->
+                Log.d("Save Forum Response:", response)
+                callback(true)
+            },
+            Response.ErrorListener { error ->
+                Log.e("ULPN API", "Error: ${error.message}")
+                callback(false)
+            }) {
             override fun getHeaders(): MutableMap<String, String> {
                 val headers = mutableMapOf<String, String>()
                 headers["Authorization"] = "${credentials["userId"]}"
-                headers["Value"] = newValue
-                Log.d("Headers: ", headers.toString())
+                headers["Content-Type"] = "application/json"
                 return headers
+            }
+
+            override fun getBody(): ByteArray {
+                val jsonBody = JSONObject()
+                jsonBody.put("title", newTitle)
+                jsonBody.put("description", newDescription)
+                jsonBody.put("isLocked", isLocked)
+                jsonBody.put("accessLevel", accessLevel)
+                return jsonBody.toString().toByteArray(Charsets.UTF_8)
             }
         }
 
@@ -149,9 +153,8 @@ data class ApiManager(private val context: Context?) {
         }) {
             override fun getHeaders(): MutableMap<String, String> {
                 val headers = mutableMapOf<String, String>()
-                headers["key"] = key
-                headers["Value"] = newValue
-                Log.d("Headers: ", headers.toString())
+                headers["Authorization"] = "${credentials["userId"]}"
+                Log.d("Credentials: ", headers.toString())
                 return headers
             }
         }

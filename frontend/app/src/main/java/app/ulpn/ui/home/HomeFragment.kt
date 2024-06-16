@@ -93,6 +93,9 @@ class HomeFragment : Fragment() {
                     json.put("userId", credentials.user.getId().toString())
                     json.put("accessToken", credentials.accessToken)
 
+
+                    Log.d("UserId: ", credentials.user.getId().toString())
+                    Log.d("accessToken: ", credentials.accessToken)
                     activity.userData = json
                     updateButtonState(signInButton)
                     activity.fetchForums(activity.apiManager)

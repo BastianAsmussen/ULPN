@@ -8,12 +8,10 @@ import app.ulpn.ui.Forum
 
 class EditForumViewModel(private val apiManager: ApiManager) : ViewModel() {
 
-    // Private mutable LiveData to hold the list of forums
     private val _forums = MutableLiveData<List<Forum>>()
     val forums: LiveData<List<Forum>> = _forums
 
     init {
-        // Fetch forums when ViewModel is initialized
         fetchForums()
     }
 
@@ -23,7 +21,9 @@ class EditForumViewModel(private val apiManager: ApiManager) : ViewModel() {
         }
     }
 
-    fun saveForum(id: Int, newTitle: String, newDescription: String) {
-
+    fun saveForum(id: Int, newTitle: String, newDescription: String, isLocked: Boolean, accessLevel: String, callback: (Boolean) -> Unit) {
+        apiManager.saveForum(id, newTitle, newDescription, isLocked, accessLevel) { success ->
+            callback(success)
+        }
     }
 }
