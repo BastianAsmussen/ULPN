@@ -7,16 +7,15 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONException
-import org.json.JSONObject
-
 
 data class ApiManager(private val context: Context?) {
     private val serverIp = "http://51.68.175.190:3000"
     var reqQueue: RequestQueue = Volley.newRequestQueue(context)
+
     fun fetchForumsApi(callback: (List<Forum>) -> Unit) {
         val activity = context as MainActivity
         val credentials = activity.getCredentials()
@@ -69,7 +68,36 @@ data class ApiManager(private val context: Context?) {
         reqQueue.add(request)
     }
 
+    fun saveForum(key: String, newValue: String, callback: (Boolean) -> Unit) {
+        Log.d("Confirmation", "Save Forum is being called...")
+        val activity = context as MainActivity
+        val credentials = activity.getCredentials()
+        val apiUrl = "$serverIp/forum/$key"
 
+        val request = object : StringRequest(Method.PUT, apiUrl, Response.Listener { response ->
+            Log.d("Save Forum Response:", response)
+            callback(true)
+        }, Response.ErrorListener { err ->
+            Log.e("ULPN API", "Error: ${err.message}")
+            err.networkResponse?.let { response ->
+                Log.e("ULPN API", "Error Response Code: ${response.statusCode}")
+                response.data?.let { data ->
+                    Log.e("ULPN API", "Error Data: ${String(data)}")
+                }
+            }
+            callback(false)
+        }) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = mutableMapOf<String, String>()
+                headers["Authorization"] = "${credentials["userId"]}"
+                headers["Value"] = newValue
+                Log.d("Headers: ", headers.toString())
+                return headers
+            }
+        }
+
+        reqQueue.add(request)
+    }
 
     fun fetchSettings(callback: (JSONArray) -> Unit) {
         Log.d("Confirmation", "Fetch Settings is being called...")
@@ -100,6 +128,34 @@ data class ApiManager(private val context: Context?) {
         reqQueue.add(request)
     }
 
+    fun saveSetting(key: String, newValue: String, callback: (Boolean) -> Unit) {
+        Log.d("Confirmation", "Save Setting is being called...")
+        val activity = context as MainActivity
+        val credentials = activity.getCredentials()
+        val apiUrl = "$serverIp/settings/$key"
 
+        val request = object : StringRequest(Method.PUT, apiUrl, Response.Listener { response ->
+            Log.d("Save Setting Response:", response)
+            callback(true)
+        }, Response.ErrorListener { err ->
+            Log.e("ULPN API", "Error: ${err.message}")
+            err.networkResponse?.let { response ->
+                Log.e("ULPN API", "Error Response Code: ${response.statusCode}")
+                response.data?.let { data ->
+                    Log.e("ULPN API", "Error Data: ${String(data)}")
+                }
+            }
+            callback(false)
+        }) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = mutableMapOf<String, String>()
+                headers["key"] = key
+                headers["Value"] = newValue
+                Log.d("Headers: ", headers.toString())
+                return headers
+            }
+        }
 
+        reqQueue.add(request)
+    }
 }

@@ -20,16 +20,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.button.MaterialButton
-import io.noties.markwon.Markwon
 import org.json.JSONObject
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = requireNotNull(_binding)
 
     private lateinit var viewModel: HomeViewModel
-    private lateinit var markwon: Markwon
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private lateinit var signInButton: MaterialButton
 
@@ -39,14 +37,24 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val rootView = binding.root
+        return binding.root
+    }
 
-        // Initialize ViewModel using ViewModelProvider
-        viewModel = ViewModelProvider(this, HomeViewModelFactory(ApiManager(requireContext()))).get(HomeViewModel::class.java)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        // Observe changes to title and update UI
+        // Initialize ViewModel using ViewModelProvider with HomeViewModelFactory
+        val apiManager = ApiManager(requireContext())
+        val factory = HomeViewModelFactory(apiManager)
+        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+
+        // Observe changes to title and description
         viewModel.title.observe(viewLifecycleOwner) { title ->
-            binding.title.text = title
+            binding.title.text = title ?: ""
+        }
+
+        viewModel.description.observe(viewLifecycleOwner) { description ->
+            binding.description.text = description ?: ""
         }
 
         // Initialize Google Sign-In options
@@ -60,14 +68,6 @@ class HomeFragment : Fragment() {
         // Set up Google Sign-In Button
         signInButton = binding.loginWithGoogleButton
         updateButtonState(signInButton)
-
-        return rootView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Other components...
     }
 
     override fun onDestroyView() {
@@ -85,7 +85,6 @@ class HomeFragment : Fragment() {
             .withScope("openid profile email")
             .start(requireActivity(), object : Callback<Credentials, AuthenticationException> {
                 override fun onFailure(exception: AuthenticationException) {
-                    Log.e(TAG, "Failed to log in!", exception)
                     Toast.makeText(requireContext(), "Failed to log in!", Toast.LENGTH_SHORT).show()
                 }
 
@@ -97,6 +96,8 @@ class HomeFragment : Fragment() {
                     activity.userData = json
                     updateButtonState(signInButton)
                     activity.fetchForums(activity.apiManager)
+
+                    // Fetch settings after successful login
                     activity.fetchSettings(activity.apiManager)
                 }
             })
@@ -115,6 +116,7 @@ class HomeFragment : Fragment() {
                 }
 
                 override fun onSuccess(payload: Void?) {
+                    // Handle logout success
                     activity.userData = null
                     updateButtonState(signInButton)
                 }

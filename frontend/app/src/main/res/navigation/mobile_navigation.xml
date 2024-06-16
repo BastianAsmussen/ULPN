@@ -31,4 +31,11 @@
         tools:layout="@layout/fragment_admin">
     </fragment>
 
+    <fragment
+        android:id="@+id/nav_editforum"
+        android:name="app.ulpn.ui.editforum.EditForumFragment"
+        android:label=""
+        tools:layout="@layout/fragment_editforum">
+    </fragment>
+
 </navigation>
