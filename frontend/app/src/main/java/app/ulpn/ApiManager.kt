@@ -109,6 +109,48 @@ data class ApiManager(private val context: Context?) {
         reqQueue.add(request)
     }
 
+    fun addForum(
+        title: String,
+        description: String,
+        isLocked: Boolean,
+        accessLevel: String,
+        ownerId: Int?,
+        callback: (Boolean) -> Unit
+    ) {
+        val activity = context as MainActivity
+        val credentials = activity.getCredentials()
+        val apiUrl = "$serverIp/forum"
+
+        val request = object : StringRequest(Method.POST, apiUrl,
+            Response.Listener { response ->
+                Log.d("Add Forum Response:", response)
+                callback(true)
+            },
+            Response.ErrorListener { error ->
+                Log.e("ULPN API", "Error: ${error.message}")
+                callback(false)
+            }) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = mutableMapOf<String, String>()
+                headers["Authorization"] = "${credentials["userId"]}"
+                headers["Content-Type"] = "application/json"
+                return headers
+            }
+
+            override fun getBody(): ByteArray {
+                val jsonBody = JSONObject()
+                jsonBody.put("title", title)
+                jsonBody.put("description", description)
+                jsonBody.put("isLocked", isLocked)
+                jsonBody.put("accessLevel", accessLevel)
+                ownerId?.let { jsonBody.put("owner_id", it) }
+                return jsonBody.toString().toByteArray(Charsets.UTF_8)
+            }
+        }
+
+        reqQueue.add(request)
+    }
+
 
     fun deleteForum(id: Int, callback: (Boolean) -> Unit) {
         val activity = context as MainActivity

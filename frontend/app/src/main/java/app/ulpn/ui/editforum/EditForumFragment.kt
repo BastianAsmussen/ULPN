@@ -45,6 +45,30 @@ class EditForumFragment : Fragment() {
             updateForumsUI(forums)
         })
 
+        // Handle add forum button click
+        binding.addForumButton.setOnClickListener {
+            val newTitle = binding.newForumTitleEditText.text.toString()
+            val newDescription = binding.newForumDescriptionEditText.text.toString()
+            val isLocked = binding.newForumLockedCheckBox.isChecked
+            val accessLevel = binding.newForumAccessLevelEditText.text.toString()
+            val ownerId = binding.newForumOwnerIdEditText.text.toString().toIntOrNull()
+
+            // Call ViewModel to add the new forum
+            editForumViewModel.addForum(newTitle, newDescription, isLocked, accessLevel, ownerId) { success ->
+                if (success) {
+                    Toast.makeText(context, "Forum added successfully", Toast.LENGTH_SHORT).show()
+                    // Clear input fields after successful addition if needed
+                    binding.newForumTitleEditText.text.clear()
+                    binding.newForumDescriptionEditText.text.clear()
+                    binding.newForumLockedCheckBox.isChecked = false
+                    binding.newForumAccessLevelEditText.text.clear()
+                    binding.newForumOwnerIdEditText.text.clear()
+                } else {
+                    Toast.makeText(context, "Failed to add forum", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
         return root
     }
 
@@ -59,7 +83,7 @@ class EditForumFragment : Fragment() {
             val titleEditText = forumView.findViewById<EditText>(R.id.titleEditText)
             val descriptionEditText = forumView.findViewById<EditText>(R.id.descriptionEditText)
             val saveButton = forumView.findViewById<Button>(R.id.saveButton)
-            val deleteButton = forumView.findViewById<Button>(R.id.deleteButton) // Add delete button
+            val deleteButton = forumView.findViewById<Button>(R.id.deleteButton)
 
             titleTextView.text = forum.title
             titleEditText.setText(forum.title)
@@ -93,7 +117,6 @@ class EditForumFragment : Fragment() {
             containerLayout.addView(forumView)
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

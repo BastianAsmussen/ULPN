@@ -37,4 +37,13 @@ class EditForumViewModel(private val apiManager: ApiManager) : ViewModel() {
         }
     }
 
+    fun addForum(title: String, description: String, isLocked: Boolean, accessLevel: String, ownerId: Int?, callback: (Boolean) -> Unit) {
+        apiManager.addForum(title, description, isLocked, accessLevel, ownerId) { success ->
+            if (success) {
+                // Update the list of forums after addition
+                fetchForums()
+            }
+            callback(success)
+        }
+    }
 }
