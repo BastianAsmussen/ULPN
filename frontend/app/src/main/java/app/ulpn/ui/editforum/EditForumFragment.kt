@@ -81,7 +81,7 @@ class EditForumFragment : Fragment() {
         val sortedForums = forums.sortedBy { it.id }
 
         // Create a map to group forums by ownerId
-        val forumsByOwnerId = sortedForums.groupBy { it.owner_id }
+        val forumsByOwnerId = sortedForums.groupBy { it.ownerId }
 
         // Iterate through sorted forums and add views
         sortedForums.forEach { forum ->
@@ -99,13 +99,13 @@ class EditForumFragment : Fragment() {
             titleEditText.setText(forum.title)
             descriptionEditText.setText(forum.description)
             idTextView.text = forum.id.toString()
-            ownerIdTextView.text = forum.owner_id.toString()
+            ownerIdTextView.text = forum.ownerId.toString()
 
             saveButton.setOnClickListener {
                 val newTitle = titleEditText.text.toString()
                 val newDescription = descriptionEditText.text.toString()
-                val isLocked = forum.is_locked
-                val accessLevel = forum.access_Level
+                val isLocked = forum.isLocked
+                val accessLevel = forum.accessLevel
 
                 editForumViewModel.saveForum(forum.id, newTitle, newDescription, isLocked, accessLevel) { success ->
                     if (success) {

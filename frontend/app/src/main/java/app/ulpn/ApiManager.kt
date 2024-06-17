@@ -32,13 +32,13 @@ data class ApiManager(private val context: Context?) {
 
                     for (i in 0 until response.length()) {
                         val jsonObj = response.getJSONObject(i)
-                        val owner = if (jsonObj.has("owner_id")) jsonObj.getIntOrNull("owner_id") else null
+                        val owner = if (jsonObj.has("ownerId")) jsonObj.getIntOrNull("ownerId") else null
                         val forum = Forum(
                             jsonObj.getInt("id"),
                             jsonObj.getString("title"),
                             jsonObj.getString("description"),
-                            jsonObj.getBoolean("is_locked"),
-                            jsonObj.getString("access_level"),
+                            jsonObj.getBoolean("isLocked"),
+                            jsonObj.getString("accessLevel"),
                             owner
                         )
                         forums.add(forum)
@@ -144,9 +144,9 @@ data class ApiManager(private val context: Context?) {
                 jsonBody.put("isLocked", isLocked)
                 jsonBody.put("accessLevel", accessLevel)
                 if (ownerId != null) {
-                    jsonBody.put("owner_id", ownerId)
+                    jsonBody.put("ownerId", ownerId)
                 } else {
-                    jsonBody.put("owner_id", JSONObject.NULL)
+                    jsonBody.put("ownerId", JSONObject.NULL)
                 }
                 return jsonBody.toString().toByteArray(Charsets.UTF_8)
             }
