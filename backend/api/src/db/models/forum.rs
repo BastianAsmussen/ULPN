@@ -11,6 +11,7 @@ use super::user::AccessLevel;
 #[derive(Debug, Queryable, Selectable, Identifiable, Serialize)]
 #[diesel(table_name = forums)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
+#[serde(rename_all = "camelCase")]
 pub struct Forum {
     pub id: i32,
     pub owner_id: Option<i32>,

@@ -5,6 +5,7 @@ use crate::db::models::user::AccessLevel;
 use crate::state::Config;
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct Role {
     id: String,
     name: String,
